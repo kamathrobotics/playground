@@ -475,7 +475,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   color: rgba(255, 255, 255, 0.45);
   pointer-events: none;
   user-select: none;
@@ -490,10 +490,6 @@ input[type="range"]::-moz-range-thumb {
   white-space: nowrap;
 }
 
-.hint-divider {
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 10px;
-}
 
 .hint-item {
   display: flex;
