@@ -469,13 +469,19 @@ input[type="range"]::-moz-range-thumb {
 /* ── Camera controls hint (inside View section) ── */
 #cameraHints {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  gap: 5px;
   margin-top: 8px;
   color: rgba(255, 255, 255, 0.45);
   user-select: none;
+}
+
+#cameraHints .hint-icons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
 }
 
 .hint-label {
