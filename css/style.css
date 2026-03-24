@@ -18,7 +18,10 @@ body {
 }
 
 #canvas-container {
-  width: 100vw;
+  position: fixed;
+  left: 240px; /* must match PANEL_OFFSET in scene.js */
+  top: 0;
+  width: calc(100vw - 240px);
   height: 100vh;
 }
 
