@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Static Dev Server",
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": [".claude/server.js"],
+      "port": 8080
+    }
+  ]
+}
