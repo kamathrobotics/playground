@@ -48,9 +48,18 @@ body {
 /* ── Playground title ── */
 #playground-title {
   display: block;
-  width: 75%;
-  height: auto;
+  text-align: center;
   margin: 0 auto 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 18px;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+#playground-title .title-bracket {
+  color: #009fa1;
+  -webkit-text-stroke: 0.5px rgba(255,255,255,0.4);
 }
 
 /* ── Robot selector row (dropdown + info button) ── */
