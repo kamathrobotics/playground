@@ -432,7 +432,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
   currentJointAngles = {};
   if (robot && activeRobot) {
     robot.position.set(0, 0, activeRobot.config.zOffset);
-    robot.rotation.z = 0;
+    robot.rotation.z = activeRobot.config.thetaOffset ?? 0;
   }
 
   // Reset input sliders to current profile defaults + clear key state
