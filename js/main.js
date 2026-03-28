@@ -129,6 +129,7 @@ let robotAxes   = null;   // axes group attached to robot
 let originLine  = null;   // line from world origin → robot origin
 let robotPose   = { x: 0, y: 0, theta: 0 };
 let telemVel    = { vx: 0, vy: 0, omega: 0 };
+let currentJointAngles = {};  // updated by arm updateJoints each frame; used by arm telemetry
 const TELEM_SMOOTH = 0.2;
 let lastTime    = performance.now();
 let loadGen     = 0;      // bumped on every robot switch; stale callbacks check against it
@@ -179,6 +180,18 @@ function loadRobot(key) {
 
   // Reset input state and configure sliders for this robot's profile
   applyProfile(entry.inputProfile);
+
+  // Reset arm slider values to defaults (no-op for wheeled profiles)
+  if (entry.inputProfile.reset) entry.inputProfile.reset();
+
+  // Show/hide control groups based on robot type
+  const isArm = config.robotType === 'arm';
+  document.getElementById('wheeled-controls').style.display = isArm ? 'none' : '';
+  document.getElementById('arm-controls').style.display     = isArm ? ''     : 'none';
+
+  // Clear joint angle state on every robot switch
+  currentJointAngles = {};
+
   if (!sameType) resetEstop();
 
   // Update info card with per-robot metadata
@@ -260,16 +273,18 @@ function loadRobot(key) {
       robotAxes.visible    = axesHelper.visible;
       robot.add(robotAxes);
 
-      // Origin trail line (updated every frame while robot moves)
-      originLine = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(0, 0, 0),
-          new THREE.Vector3(robotPose.x, robotPose.y, 0),
-        ]),
-        new THREE.LineBasicMaterial({ color: 0x83e3e2 })
-      );
-      originLine.visible = axesHelper.visible;
-      scene.add(originLine);
+      // Origin trail line — only for mobile robots that translate in the world
+      if (config.robotType !== 'arm') {
+        originLine = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(robotPose.x, robotPose.y, 0),
+          ]),
+          new THREE.LineBasicMaterial({ color: 0x83e3e2 })
+        );
+        originLine.visible = axesHelper.visible;
+        scene.add(originLine);
+      }
 
       robot.position.set(robotPose.x, robotPose.y, config.zOffset);
       robot.rotation.z = robotPose.theta;
@@ -336,20 +351,22 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (robot) {
-    // getCommands() enforces E-stop internally — returns zero commands when active
     const commands = getCommands(activeRobot.inputProfile);
     const { velX, velY, velAngular } = commands;
 
-    // dt always advances while a robot is loaded; capped at 100ms to absorb tab-switch spikes
     const now = performance.now();
     const dt  = Math.min((now - lastTime) / 1000, 0.1);
     lastTime  = now;
 
-    if (velX !== 0 || velY !== 0 || velAngular !== 0) {
-      // Drive-type-specific wheel IK — each robot module handles its own joints
+    if (activeRobot.config.robotType === 'arm') {
+      // Arm: lerp joints toward slider targets every frame (no pose integration)
+      const result = activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
+      if (result && Object.keys(result).length) currentJointAngles = result;
+
+    } else if (velX !== 0 || velY !== 0 || velAngular !== 0) {
+      // Wheeled: drive-type IK + integrate body pose in world frame
       activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
 
-      // Integrate body pose in world frame
       const cosT = Math.cos(robotPose.theta);
       const sinT = Math.sin(robotPose.theta);
       robotPose.x     += (velX * cosT - velY * sinT) * dt;
@@ -359,11 +376,10 @@ function animate() {
       robot.position.set(robotPose.x, robotPose.y, activeRobot.config.zOffset);
       robot.rotation.z = robotPose.theta;
 
-      // Update origin → robot trail
       if (originLine) {
         const p = originLine.geometry.attributes.position.array;
-        p[0] = 0;             p[1] = 0;             p[2] = 0;
-        p[3] = robotPose.x;   p[4] = robotPose.y;   p[5] = 0;
+        p[0] = 0;           p[1] = 0;           p[2] = 0;
+        p[3] = robotPose.x; p[4] = robotPose.y; p[5] = 0;
         originLine.geometry.attributes.position.needsUpdate = true;
       }
     }
@@ -374,7 +390,7 @@ function animate() {
     telemVel.omega += TELEM_SMOOTH * (velAngular - telemVel.omega);
 
     if (activeTelemFields.length) {
-      const state = { pose: robotPose, vel: telemVel };
+      const state = { pose: robotPose, vel: telemVel, joints: currentJointAngles };
       for (const field of activeTelemFields) field.span.textContent = field.getValue(state);
     }
   } else {
@@ -411,6 +427,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
 
   // Return robot to world origin
   robotPose = { x: 0, y: 0, theta: 0 };
+  currentJointAngles = {};
   if (robot && activeRobot) {
     robot.position.set(0, 0, activeRobot.config.zOffset);
     robot.rotation.z = 0;
@@ -418,6 +435,8 @@ document.getElementById('resetButton').addEventListener('click', () => {
 
   // Reset input sliders to current profile defaults + clear key state
   if (activeRobot) applyProfile(activeRobot.inputProfile);
+  // Reset arm joint sliders to defaults (no-op for wheeled)
+  if (activeRobot?.inputProfile?.reset) activeRobot.inputProfile.reset();
 
   // Restore axes + grid visibility
   axesHelper.visible = true;
