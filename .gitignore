@@ -6,3 +6,10 @@ Thumbs.db
 # Local tooling / docs
 .claude/
 docs/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
