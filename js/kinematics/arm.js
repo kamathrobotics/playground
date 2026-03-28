@@ -29,7 +29,7 @@ export function updateJoints(robot, commands, dt, _params) {
   if (!robot?.joints) return {};
 
   const { jointTargets, speed } = commands;
-  const maxDelta = speed * dt;
+  const maxDelta = (speed ?? 0) * dt;
   const result   = {};
 
   for (const name of JOINT_NAMES) {
@@ -42,6 +42,7 @@ export function updateJoints(robot, commands, dt, _params) {
     const move    = Math.max(-maxDelta, Math.min(maxDelta, delta));
 
     joint.setJointValue(current + move);
+    // Read back the applied angle; fall back to predicted value if the loader does not expose it
     result[name] = joint.angle ?? (current + move);
   }
 
