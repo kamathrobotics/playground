@@ -9,7 +9,7 @@
  *   armSlider_speed
  */
 
-import { isEstopActive } from '../input.js';
+import { isEstopActive } from '../../input.js';
 
 // Joint configuration: DOM id suffix, URDF joint name, URDF limits, default
 const ARM_JOINTS = [
