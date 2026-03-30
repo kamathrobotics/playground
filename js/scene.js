@@ -7,7 +7,7 @@
 
 // ── Scene + background ───────────────────────────────────────────────────────
 export const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x009fa1);  // teal — constant
+scene.background = new THREE.Color(0x0d1117);  // deep charcoal
 
 // ── Panel offset ─────────────────────────────────────────────────────────────
 // The control panel is fixed at left:20px, width:220px → right edge at 240px.
@@ -70,7 +70,7 @@ const gridMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uScale:     { value: 0.1 },
     uDivisions: { value: 10 },
-    uColor:     { value: new THREE.Color(0x555555) },
+    uColor:     { value: new THREE.Color(0x1a8080) },  // subtle teal grid on dark bg
     uDistance:  { value: 100 },
   },
   transparent: true,

@@ -1,7 +1,8 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Robot Playground — styles
-   Accent / background: LeKiwi teal (#009fa1) — constant across all robots
-   Panel aesthetic inspired by so-arm-playground: flat, dark, minimal
+   Glassmorphism HUD aesthetic
+   Accent: teal (#02bebe) — constant across all robots
+   Background: #0d1117 (deep charcoal)
 ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Base ── */
@@ -11,10 +12,10 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: Arial, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   color: white;
-  background: #009fa1;
+  background: #0d1117;
 }
 
 #canvas-container {
@@ -29,9 +30,14 @@ body {
   left: 12px;
   width: 220px;
   max-height: calc(100vh - 72px);  /* 12px top + 48px footer + 12px gap */
-  background: rgba(38, 38, 38, 0.90);
+  background: rgba(13, 17, 23, 0.65);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
@@ -40,10 +46,10 @@ body {
   gap: 8px;
 }
 
-/* Thin scrollbar so it doesn't eat into layout */
+/* Thin scrollbar */
 #controls::-webkit-scrollbar { width: 4px; }
 #controls::-webkit-scrollbar-track { background: transparent; }
-#controls::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+#controls::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
 
 /* ── Playground title ── */
 #playground-title {
@@ -58,8 +64,8 @@ body {
 }
 
 #playground-title .title-bracket {
-  color: #009fa1;
-  -webkit-text-stroke: 0.5px rgba(255,255,255,0.4);
+  color: rgba(2, 190, 190, 0.9);
+  -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
 }
 
 /* ── Robot selector row (dropdown + info button) ── */
@@ -82,26 +88,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.40);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
   line-height: 1;
   padding: 0;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 #controls .info-button:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.90);
+  border-color: rgba(255, 255, 255, 0.20);
 }
 
 #controls .info-button.active {
-  background: rgba(2, 130, 130, 0.38);
-  border-color: rgba(2, 190, 190, 0.5);
+  background: rgba(2, 130, 130, 0.25);
+  border-color: rgba(2, 190, 190, 0.50);
   color: rgba(255, 255, 255, 0.95);
 }
 
@@ -112,9 +119,14 @@ body {
   top: 12px;
   left: calc(12px + 220px + 12px);  /* panel left + panel width + gap */
   width: 220px;
-  background: rgba(38, 38, 38, 0.90);
+  background: rgba(13, 17, 23, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   z-index: 10;
 }
 
@@ -130,26 +142,28 @@ body {
 }
 
 .info-card-title {
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .info-card-close {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.30);
   cursor: pointer;
   font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
   padding: 0;
   line-height: 1;
   transition: color 0.15s;
 }
 
 .info-card-close:hover {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ── Robot selector dropdown ── */
@@ -161,7 +175,7 @@ body {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(2, 190, 190, 0.85);
+  color: rgba(2, 190, 190, 0.80);
   pointer-events: none;
   font-size: 11px;
 }
@@ -169,14 +183,14 @@ body {
 #robotSelect {
   width: 100%;
   padding: 5px 22px 5px 8px;
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
-  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   appearance: none;
@@ -186,57 +200,60 @@ body {
 }
 
 #robotSelect:focus {
-  border-color: rgba(2, 200, 200, 0.55);
+  border-color: rgba(2, 190, 190, 0.50);
 }
 
 #robotSelect option {
-  background: #0a1a1a;
+  background: #0d1117;
 }
 
 #robotSelect:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 /* ── Panel divider ── */
 .panel-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
   flex-shrink: 0;
 }
 
 /* ── Collapsible sections ── */
 .collapsible {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
   overflow: hidden;
   flex-shrink: 0;
 }
 
 .collapsible-header {
-  padding: 8px 10px;
+  padding: 7px 10px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.45);
   user-select: none;
-  transition: background 0.15s, color 0.15s;
-  border-left: 2px solid rgba(2, 190, 190, 0.6);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border-left: 2px solid rgba(2, 190, 190, 0.40);
 }
 
 .collapsible-header:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-left-color: rgba(2, 210, 210, 0.9);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  border-left-color: rgba(2, 210, 210, 0.85);
 }
 
 .collapsible-icon {
   font-size: 10px;
-  color: rgba(2, 190, 190, 0.75);
+  color: rgba(2, 190, 190, 0.60);
   transition: transform 0.2s ease;
 }
 
@@ -275,47 +292,49 @@ body {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
   user-select: none;
   transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
 }
 
 /* White/grey tint for rotation keys (Q/E) */
 #key-q, #key-e {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* Teal tint for movement keys (W/A/S/D) */
 .key.movement-key {
-  background: rgba(2, 130, 130, 0.38);
-  border-color: rgba(2, 190, 190, 0.5);
+  background: rgba(2, 130, 130, 0.18);
+  border-color: rgba(2, 190, 190, 0.32);
 }
 
 .key-letter {
   font-size: 12px;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255, 255, 255, 0.90);
   line-height: 1;
 }
 
 .key-symbol {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.38);
   line-height: 1;
 }
 
 /* Active (pressed) state — teal glow */
 .key.active {
-  background: rgba(2, 190, 190, 0.32);
-  border-color: rgba(2, 210, 210, 0.65);
-  box-shadow: 0 0 10px rgba(2, 190, 190, 0.45);
+  background: rgba(2, 190, 190, 0.22);
+  border-color: rgba(2, 210, 210, 0.58);
+  box-shadow: 0 0 12px rgba(2, 190, 190, 0.38),
+              inset 0 0 8px rgba(2, 190, 190, 0.10);
 }
 
 .key.active .key-symbol {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 0.90);
 }
 
 /* ── Velocity sliders ── */
@@ -335,30 +354,32 @@ body {
 .slider-label {
   flex: 1;
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.38);
 }
 
 .slider-value-badge {
   flex-shrink: 0;
-  background: rgba(2, 130, 130, 0.38);
-  border: 1px solid rgba(2, 190, 190, 0.5);
+  background: rgba(2, 130, 130, 0.18);
+  border: 1px solid rgba(2, 190, 190, 0.32);
   border-radius: 4px;
-  padding: 1px 4px;
+  padding: 1px 5px;
   font-size: 10px;
-  font-family: monospace;
-  color: rgba(255, 255, 255, 0.95);
-  letter-spacing: 0.3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.90);
+  letter-spacing: 0.2px;
 }
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.15);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -366,23 +387,25 @@ input[type="range"] {
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 13px;
-  height: 13px;
-  background: rgba(2, 200, 200, 0.9);
+  width: 14px;
+  height: 14px;
+  background: rgba(2, 200, 200, 0.95);
   border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.1s, background 0.1s;
+  box-shadow: 0 0 6px rgba(2, 190, 190, 0.50);
+  transition: transform 0.1s, background 0.1s, box-shadow 0.1s;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
   background: rgba(2, 230, 230, 1);
-  transform: scale(1.15);
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(2, 190, 190, 0.70);
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 13px;
-  height: 13px;
-  background: rgba(2, 200, 200, 0.9);
+  width: 14px;
+  height: 14px;
+  background: rgba(2, 200, 200, 0.95);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -403,67 +426,72 @@ input[type="range"]::-moz-range-thumb {
 
 /* ── Generic button base ── */
 #controls button {
-  padding: 5px 0;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
+  padding: 6px 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 11px;
-  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 #controls button:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.90);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Reset button — brief teal flash on click, then returns to default */
+/* Reset button — brief teal flash on click */
 #resetButton.active,
 #resetButton.active:hover {
-  background: rgba(2, 130, 130, 0.38);
-  border-color: rgba(2, 190, 190, 0.5);
+  background: rgba(2, 130, 130, 0.25);
+  border-color: rgba(2, 190, 190, 0.50);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 8px rgba(2, 190, 190, 0.35);
+  box-shadow: 0 0 10px rgba(2, 190, 190, 0.28);
 }
 
 /* Active toggle state — teal */
 #controls .toggle-button.active {
-  background: rgba(2, 130, 130, 0.38);
-  border-color: rgba(2, 190, 190, 0.5);
+  background: rgba(2, 130, 130, 0.25);
+  border-color: rgba(2, 190, 190, 0.50);
   color: rgba(255, 255, 255, 0.95);
 }
 
-/* ── E-Stop key — always in Controls, regardless of profile ── */
-/* Default appearance identical to Q/E. Active state is red instead of teal. */
+/* ── E-Stop key ── */
 .key.estop-key {
   cursor: pointer;
 }
 
 .key.estop-key:hover .estop-label {
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 0.90);
 }
 
 .key.estop-key.active {
-  background: rgba(190, 2, 2, 0.32);
-  border-color: rgba(210, 2, 2, 0.65);
-  box-shadow: 0 0 10px rgba(190, 2, 2, 0.45);
+  background: rgba(200, 30, 30, 0.28);
+  border-color: rgba(220, 50, 50, 0.62);
+  box-shadow: 0 0 12px rgba(200, 30, 30, 0.38),
+              inset 0 0 8px rgba(200, 30, 30, 0.10);
 }
 
-/* Wide variant — sits below the sliders, spans the full content width */
+/* Wide variant — full content width below sliders */
 .key.estop-wide {
   width: 100%;
-  height: 30px;
+  height: 32px;
   flex-direction: row;
   gap: 8px;
   margin-top: 14px;
 }
 
 .estop-label {
-  font-size: 12px;
-  font-weight: bold;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255, 255, 255, 0.40);
   letter-spacing: 0.5px;
 }
 
@@ -479,7 +507,8 @@ input[type="range"]::-moz-range-thumb {
   gap: 6px;
   margin-top: 0;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.5);
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255, 255, 255, 0.38);
   padding-top: 4px;
   flex-shrink: 0;
 }
@@ -492,8 +521,8 @@ input[type="range"]::-moz-range-thumb {
   content: '';
   width: 10px;
   height: 10px;
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(2, 200, 200, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  border-top-color: rgba(2, 200, 200, 0.90);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
@@ -506,13 +535,14 @@ input[type="range"]::-moz-range-thumb {
 /* ── Info card content ── */
 .about-description {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.55;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.6;
   margin: 0 0 10px 0;
 }
 
 .about-description a {
-  color: rgba(2, 210, 210, 0.9);
+  color: rgba(2, 210, 210, 0.90);
   text-decoration: none;
   transition: color 0.15s;
 }
@@ -527,27 +557,29 @@ input[type="range"]::-moz-range-thumb {
   justify-content: center;
   gap: 6px;
   width: 100%;
-  padding: 5px 0;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
+  padding: 6px 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
   text-decoration: none;
-  font-size: 11px;
-  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .github-button:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.12);
   color: white;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .github-button svg {
   flex-shrink: 0;
 }
-
-
 
 /* ── Footer telemetry ── */
 #telem-left {
@@ -558,7 +590,7 @@ input[type="range"]::-moz-range-thumb {
 
 #telem-icon {
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.28);
   margin-right: 8px;
   line-height: 1;
   flex-shrink: 0;
@@ -567,7 +599,7 @@ input[type="range"]::-moz-range-thumb {
 #footer-divider {
   width: 1px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.10);
   margin-left: 12px;
   flex-shrink: 0;
 }
@@ -578,7 +610,7 @@ input[type="range"]::-moz-range-thumb {
   /* grid-template-columns and rows are set dynamically by renderTelemetry() */
   column-gap: 4px;
   row-gap: 2px;
-  font-family: 'Courier New', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -586,14 +618,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tl {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.32);
   text-align: right;
 }
 
 .tv {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
 }
-
 
 /* ── Footer bar ── */
 #footer {
@@ -602,7 +633,10 @@ input[type="range"]::-moz-range-thumb {
   left: 0;
   right: 0;
   height: 48px;
-  background: rgba(38, 38, 38, 0.90);
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   align-items: center;
   padding: 0 12px;
