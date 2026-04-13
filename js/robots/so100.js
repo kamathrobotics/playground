@@ -1,16 +1,16 @@
 /**
- * robots/so100.js — SO-ARM100 robot configuration
+ * robots/so100.js — SO100 robot configuration
  *
  * Robot type : 6-DOF robotic arm
- * URDF source: github.com/adityakamath/SO-ARM100
+ * URDF source: github.com/adityakamath/soarm_ros2
  */
 import { updateJoints } from '../kinematics/arm.js';
 import { armProfile }   from '../input/profiles/arm.js';
 
 export const config = {
   robotType: 'arm',
-  title:     'SO-ARM100 Playground',
-  repoBase:  'https://raw.githubusercontent.com/adityakamath/SO-ARM100/main/Simulation/SO100/',
+  title:     'SO100 Playground',
+  repoBase:  'https://raw.githubusercontent.com/adityakamath/soarm_ros2/main/soarm_description/urdf/so100/',
   urdfPath:  'so100.urdf',
   zOffset:     0.0,
   thetaOffset: Math.PI / 2,  // rotate 90° CCW so the arm faces forward in the scene
@@ -36,17 +36,17 @@ export const config = {
   },
 
   about: {
-    description: 'The SO-ARM100 is an open-source 6-DOF robotic arm driven by serial bus servo motors. Designed for manipulation research and education, it can be mounted on a LeKiwi mobile base for a full mobile manipulation system.',
-    githubUrl:   'https://github.com/adityakamath/SO-ARM100',
+    description: 'The SO100 is an open-source 6-DOF robotic arm driven by serial bus servo motors. Designed for manipulation research and education, it can be mounted on a LeKiwi mobile base for a full mobile manipulation system.',
+    githubUrl:   'https://github.com/adityakamath/soarm_ros2',
   },
 
   /**
-   * Mesh paths in the SO100 URDF are relative (e.g. "assets/Base.stl").
-   * Prepend repoBase to make them fetchable.
+   * Mesh paths in this URDF are relative (e.g. "../../meshes/so100/Base.stl").
+   * Use new URL() to resolve them against repoBase so ../.. traversal works correctly.
    */
   resolveMeshPath(path) {
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return this.repoBase + path;
+    return new URL(path, this.repoBase).href;
   },
 };
 
