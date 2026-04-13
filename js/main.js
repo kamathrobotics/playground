@@ -211,9 +211,10 @@ function loadRobot(key) {
   // ── Build a fresh loader for this robot ─────────────────────────────────────
   const mgr    = new THREE.LoadingManager();
   const loader = new URDFLoader(mgr);
-  loader.fetchOptions = { mode: 'cors' };
+  loader.fetchOptions   = { mode: 'cors' };
+  loader.parseCollision = false;  // collision geometry mirrors visuals; skip to halve fetch count
 
-  // Translate URDF mesh paths → fetchable URLs using per-robot resolver
+  // Translate URDF mesh paths → fetchable URLs using per-robot resolver.
   loader.loadMeshCb = (path, manager, onComplete) => {
     const url = config.resolveMeshPath(path);
     console.log('Mesh:', path, '→', url);
