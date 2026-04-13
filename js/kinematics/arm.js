@@ -8,12 +8,12 @@
  */
 
 const JOINT_NAMES = [
-  'shoulder_pan',
-  'shoulder_lift',
-  'elbow_flex',
-  'wrist_flex',
-  'wrist_roll',
-  'gripper',
+  'shoulder_pan_joint',
+  'shoulder_lift_joint',
+  'elbow_flex_joint',
+  'wrist_flex_joint',
+  'wrist_roll_joint',
+  'gripper_joint',
 ];
 
 /**

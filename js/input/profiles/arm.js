@@ -13,12 +13,12 @@ import { isEstopActive } from '../../input.js';
 
 // Joint configuration: DOM id suffix, URDF joint name, URDF limits, default
 const ARM_JOINTS = [
-  { id: 'shoulder_pan',  name: 'shoulder_pan',  min: -2.0,          max: 2.0,     default: 0.0 },
-  { id: 'shoulder_lift', name: 'shoulder_lift', min:  0.0,          max: 3.5,     default: 0.0 },
-  { id: 'elbow_flex',    name: 'elbow_flex',    min: -Math.PI,      max: 0.0,     default: 0.0 },
-  { id: 'wrist_flex',    name: 'wrist_flex',    min: -2.5,          max: 1.2,     default: 0.0 },
-  { id: 'wrist_roll',    name: 'wrist_roll',    min: -Math.PI,      max: Math.PI, default: 0.0 },
-  { id: 'gripper',       name: 'gripper',       min: -0.2,          max: 2.0,     default: 0.0 },
+  { id: 'shoulder_pan',  name: 'shoulder_pan_joint',  min: -2.0,          max: 2.0,     default: 0.0 },
+  { id: 'shoulder_lift', name: 'shoulder_lift_joint', min:  0.0,          max: 3.5,     default: 0.0 },
+  { id: 'elbow_flex',    name: 'elbow_flex_joint',    min: -Math.PI,      max: 0.0,     default: 0.0 },
+  { id: 'wrist_flex',    name: 'wrist_flex_joint',    min: -2.5,          max: 1.2,     default: 0.0 },
+  { id: 'wrist_roll',    name: 'wrist_roll_joint',    min: -Math.PI,      max: Math.PI, default: 0.0 },
+  { id: 'gripper',       name: 'gripper_joint',       min: -0.2,          max: 2.0,     default: 0.0 },
 ];
 
 const SPEED_DEFAULT = 1.0;

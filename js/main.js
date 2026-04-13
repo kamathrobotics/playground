@@ -268,10 +268,8 @@ function loadRobot(key) {
 
       // Attach per-robot axes helper
       // For elevated robots (zOffset > 0) we push axes down so they sit at Z = 0
-      // Counter-rotate by thetaOffset so axes stay world-aligned when the mesh is rotated
       robotAxes            = createAxesHelper(0.125);
       robotAxes.position.z = -config.zOffset;
-      robotAxes.rotation.z = -(config.thetaOffset ?? 0);
       robotAxes.visible    = axesHelper.visible;
       robot.add(robotAxes);
 
@@ -289,7 +287,7 @@ function loadRobot(key) {
       }
 
       robot.position.set(robotPose.x, robotPose.y, config.zOffset);
-      robot.rotation.z = robotPose.theta + (config.thetaOffset ?? 0);
+      robot.rotation.z = robotPose.theta;
       scene.add(robot);
       glitchRobotIn(robot, 450);
       console.log('Robot in scene:', key);
@@ -432,7 +430,7 @@ document.getElementById('resetButton').addEventListener('click', () => {
   currentJointAngles = {};
   if (robot && activeRobot) {
     robot.position.set(0, 0, activeRobot.config.zOffset);
-    robot.rotation.z = activeRobot.config.thetaOffset ?? 0;
+    robot.rotation.z = 0;
   }
 
   // Collapse the origin trail line back to a zero-length point

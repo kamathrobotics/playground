@@ -13,7 +13,6 @@ export const config = {
   repoBase:  'https://raw.githubusercontent.com/adityakamath/soarm_ros2/main/soarm_description/urdf/so100/',
   urdfPath:  'so100.urdf',
   zOffset:     0.0,
-  thetaOffset: Math.PI / 2,  // rotate 90° CCW so the arm faces forward in the scene
 
   // No geometry params needed — arm.js does direct joint control
   kinematics: {},
@@ -23,14 +22,14 @@ export const config = {
     colWidths: ['9ch', '9ch', '9ch'],
     rows: [
       [
-        { id: 'pan',   label: 'pan',   getValue: s => ((s.joints?.shoulder_pan  ?? 0)).toFixed(2) + ' rad' },
-        { id: 'lift',  label: 'lift',  getValue: s => ((s.joints?.shoulder_lift ?? 0)).toFixed(2) + ' rad' },
-        { id: 'flex',  label: 'flex',  getValue: s => ((s.joints?.elbow_flex    ?? 0)).toFixed(2) + ' rad' },
+        { id: 'pan',   label: 'pan',   getValue: s => ((s.joints?.shoulder_pan_joint  ?? 0)).toFixed(2) + ' rad' },
+        { id: 'lift',  label: 'lift',  getValue: s => ((s.joints?.shoulder_lift_joint ?? 0)).toFixed(2) + ' rad' },
+        { id: 'flex',  label: 'flex',  getValue: s => ((s.joints?.elbow_flex_joint    ?? 0)).toFixed(2) + ' rad' },
       ],
       [
-        { id: 'wrist', label: 'wrist', getValue: s => ((s.joints?.wrist_flex    ?? 0)).toFixed(2) + ' rad' },
-        { id: 'roll',  label: 'roll',  getValue: s => ((s.joints?.wrist_roll    ?? 0)).toFixed(2) + ' rad' },
-        { id: 'grip',  label: 'grip',  getValue: s => ((s.joints?.gripper       ?? 0)).toFixed(2) + ' rad' },
+        { id: 'wrist', label: 'wrist', getValue: s => ((s.joints?.wrist_flex_joint    ?? 0)).toFixed(2) + ' rad' },
+        { id: 'roll',  label: 'roll',  getValue: s => ((s.joints?.wrist_roll_joint    ?? 0)).toFixed(2) + ' rad' },
+        { id: 'grip',  label: 'grip',  getValue: s => ((s.joints?.gripper_joint       ?? 0)).toFixed(2) + ' rad' },
       ],
     ],
   },
