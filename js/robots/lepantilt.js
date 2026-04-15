@@ -5,7 +5,7 @@
  * URDF source: github.com/adityakamath/lepantilt_ros2
  */
 import { updateJoints }   from '../kinematics/lepantilt.js';
-import { pantiltProfile } from '../input/profiles/pantilt.js';
+import { pantiltProfile } from '../input/profiles/lepantilt.js';
 
 export const config = {
   robotType: 'arm',
