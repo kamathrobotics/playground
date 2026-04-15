@@ -185,9 +185,10 @@ function loadRobot(key) {
   if (entry.inputProfile.reset) entry.inputProfile.reset();
 
   // Show/hide control groups based on robot type
-  const isArm = config.robotType === 'arm';
-  document.getElementById('wheeled-controls').style.display = isArm ? 'none' : '';
-  document.getElementById('arm-controls').style.display     = isArm ? ''     : 'none';
+  const controlsId = config.controlsId ?? (config.robotType === 'arm' ? 'arm-controls' : 'wheeled-controls');
+  document.getElementById('wheeled-controls').style.display   = controlsId === 'wheeled-controls'  ? '' : 'none';
+  document.getElementById('arm-controls').style.display       = controlsId === 'arm-controls'      ? '' : 'none';
+  document.getElementById('pantilt-controls').style.display   = controlsId === 'pantilt-controls'  ? '' : 'none';
 
   // Clear joint angle state on every robot switch
   currentJointAngles = {};
@@ -275,7 +276,7 @@ function loadRobot(key) {
       robot.add(robotAxes);
 
       // Origin trail line — only for mobile robots that translate in the world
-      if (config.robotType !== 'arm') {
+      if (config.robotType === 'wheeled') {
         originLine = new THREE.Line(
           new THREE.BufferGeometry().setFromPoints([
             new THREE.Vector3(0, 0, 0),

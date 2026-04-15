@@ -35,7 +35,7 @@ export const config = {
   },
 
   about: {
-    description: 'The SO100 is an open-source 6-DOF robotic arm driven by serial bus servo motors. Designed for manipulation research and education, it can be mounted on a LeKiwi mobile base for a full mobile manipulation system.',
+    description: 'The SO100 is an open-source 6-DoF robotic arm (5 DoF + gripper), driven by serial bus servo motors. Originally designed for the LeRobot platform, this build extends it with full ROS 2 support. It can be mounted on a LeKiwi mobile base for a complete mobile manipulator system.',
     githubUrl:   'https://github.com/adityakamath/soarm_ros2',
   },
 

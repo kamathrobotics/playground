@@ -13,10 +13,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import * as lekiwi from './lekiwi.js';
-import * as kr003  from './kr003.js';
-import * as akros  from './akros.js';
-import * as so100  from './so100.js';
+import * as lekiwi  from './lekiwi.js';
+import * as kr003   from './kr003.js';
+import * as akros   from './akros.js';
+import * as so100   from './so100.js';
+import * as lepantilt from './lepantilt.js';
 
 /**
  * ROBOTS — map from dropdown option value → { config, updateJoints, inputProfile }
@@ -38,4 +39,5 @@ export const ROBOTS = {
   kr003,
   akros,
   so100,
+  lepantilt,
 };

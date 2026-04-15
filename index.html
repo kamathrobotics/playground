@@ -27,6 +27,7 @@
           <option value="akros">AKROS</option>
           <option value="kr003">KR003</option>
           <option value="so100">SO100</option>
+          <option value="lepantilt">LePanTilt</option>
         </select>
       </div>
       <button id="infoButton" class="info-button" aria-label="About this robot">ⓘ</button>
@@ -164,6 +165,40 @@
 
           </div>
         </div><!-- #arm-controls -->
+
+        <!-- Pan-tilt-only controls: hidden when a wheeled or arm robot is loaded -->
+        <div id="pantilt-controls" style="display:none">
+          <div class="slider-group">
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <span class="slider-label">Pan</span>
+                <span class="slider-value-badge"><span id="ptSliderValue_pan">0.00</span> rad</span>
+              </div>
+              <input type="range" id="ptSlider_pan" min="-2" max="2" step="0.01" value="0"
+                oninput="document.getElementById('ptSliderValue_pan').textContent=parseFloat(this.value).toFixed(2);this.blur()">
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <span class="slider-label">Tilt</span>
+                <span class="slider-value-badge"><span id="ptSliderValue_tilt">0.00</span> rad</span>
+              </div>
+              <input type="range" id="ptSlider_tilt" min="-1.5708" max="1.5708" step="0.01" value="0"
+                oninput="document.getElementById('ptSliderValue_tilt').textContent=parseFloat(this.value).toFixed(2);this.blur()">
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <span class="slider-label">Motor Speed</span>
+                <span class="slider-value-badge"><span id="ptSliderValue_speed">1.00</span> rad/s</span>
+              </div>
+              <input type="range" id="ptSlider_speed" min="0.1" max="3.0" step="0.1" value="1.0"
+                oninput="document.getElementById('ptSliderValue_speed').textContent=parseFloat(this.value).toFixed(2);this.blur()">
+            </div>
+
+          </div>
+        </div><!-- #pantilt-controls -->
 
         <!-- E-Stop — always present regardless of robot type -->
         <div class="key estop-key estop-wide" id="key-x">
