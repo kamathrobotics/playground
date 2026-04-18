@@ -70,7 +70,7 @@ const gridMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uScale:     { value: 0.1 },
     uDivisions: { value: 10 },
-    uColor:     { value: new THREE.Color(0x1a806e) },  // subtle turquoise grid on dark bg
+    uColor:     { value: new THREE.Color(0x0a4a5e) },  // subtle cyan grid on dark bg
     uDistance:  { value: 100 },
   },
   transparent: true,

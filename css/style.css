@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Robot Playground — styles
    Glassmorphism HUD aesthetic
-   Accent: turquoise (#2dd4bf) — constant across all robots
+   Accent: cyan (#00b8d9) — constant across all robots
    Background: #0d1117 (deep charcoal)
 ───────────────────────────────────────────────────────────────────────────── */
 
@@ -64,7 +64,7 @@ body {
 }
 
 #playground-title .title-bracket {
-  color: rgba(45, 212, 191,0.9);
+  color: rgba(0, 184, 217,0.9);
   -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
 }
 
@@ -107,8 +107,8 @@ body {
 }
 
 #controls .info-button.active {
-  background: rgba(20, 148, 132,0.25);
-  border-color: rgba(45, 212, 191,0.50);
+  background: rgba(0, 120, 160,0.25);
+  border-color: rgba(0, 184, 217,0.50);
   color: rgba(255, 255, 255, 0.95);
 }
 
@@ -175,7 +175,7 @@ body {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(45, 212, 191,0.80);
+  color: rgba(0, 184, 217,0.80);
   pointer-events: none;
   font-size: 11px;
 }
@@ -200,7 +200,7 @@ body {
 }
 
 #robotSelect:focus {
-  border-color: rgba(45, 212, 191,0.50);
+  border-color: rgba(0, 184, 217,0.50);
 }
 
 #robotSelect option {
@@ -242,18 +242,18 @@ body {
   color: rgba(255, 255, 255, 0.45);
   user-select: none;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
-  border-left: 2px solid rgba(45, 212, 191,0.40);
+  border-left: 2px solid rgba(0, 184, 217,0.40);
 }
 
 .collapsible-header:hover {
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.85);
-  border-left-color: rgba(55, 220, 198,0.85);
+  border-left-color: rgba(0, 200, 232,0.85);
 }
 
 .collapsible-icon {
   font-size: 10px;
-  color: rgba(45, 212, 191,0.60);
+  color: rgba(0, 184, 217,0.60);
   transition: transform 0.2s ease;
 }
 
@@ -307,8 +307,8 @@ body {
 
 /* Teal tint for movement keys (W/A/S/D) */
 .key.movement-key {
-  background: rgba(20, 148, 132,0.18);
-  border-color: rgba(45, 212, 191,0.32);
+  background: rgba(0, 120, 160,0.18);
+  border-color: rgba(0, 184, 217,0.32);
 }
 
 .key-letter {
@@ -327,10 +327,10 @@ body {
 
 /* Active (pressed) state — teal glow */
 .key.active {
-  background: rgba(45, 212, 191,0.22);
-  border-color: rgba(55, 220, 198,0.58);
-  box-shadow: 0 0 12px rgba(45, 212, 191,0.38),
-              inset 0 0 8px rgba(45, 212, 191,0.10);
+  background: rgba(0, 184, 217,0.22);
+  border-color: rgba(0, 200, 232,0.58);
+  box-shadow: 0 0 12px rgba(0, 184, 217,0.38),
+              inset 0 0 8px rgba(0, 184, 217,0.10);
 }
 
 .key.active .key-symbol {
@@ -363,8 +363,8 @@ body {
 
 .slider-value-badge {
   flex-shrink: 0;
-  background: rgba(20, 148, 132,0.18);
-  border: 1px solid rgba(45, 212, 191,0.32);
+  background: rgba(0, 120, 160,0.18);
+  border: 1px solid rgba(0, 184, 217,0.32);
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 10px;
@@ -389,23 +389,23 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
-  background: rgba(50, 216, 194,0.95);
+  background: rgba(0, 190, 224,0.95);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 6px rgba(45, 212, 191,0.50);
+  box-shadow: 0 0 6px rgba(0, 184, 217,0.50);
   transition: transform 0.1s, background 0.1s, box-shadow 0.1s;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  background: rgba(70, 228, 208,1);
+  background: rgba(0, 215, 240,1);
   transform: scale(1.2);
-  box-shadow: 0 0 10px rgba(45, 212, 191,0.70);
+  box-shadow: 0 0 10px rgba(0, 184, 217,0.70);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: rgba(50, 216, 194,0.95);
+  background: rgba(0, 190, 224,0.95);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -449,16 +449,16 @@ input[type="range"]::-moz-range-thumb {
 /* Reset button — brief teal flash on click */
 #resetButton.active,
 #resetButton.active:hover {
-  background: rgba(20, 148, 132,0.25);
-  border-color: rgba(45, 212, 191,0.50);
+  background: rgba(0, 120, 160,0.25);
+  border-color: rgba(0, 184, 217,0.50);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 10px rgba(45, 212, 191,0.28);
+  box-shadow: 0 0 10px rgba(0, 184, 217,0.28);
 }
 
 /* Active toggle state — teal */
 #controls .toggle-button.active {
-  background: rgba(20, 148, 132,0.25);
-  border-color: rgba(45, 212, 191,0.50);
+  background: rgba(0, 120, 160,0.25);
+  border-color: rgba(0, 184, 217,0.50);
   color: rgba(255, 255, 255, 0.95);
 }
 
@@ -522,7 +522,7 @@ input[type="range"]::-moz-range-thumb {
   width: 10px;
   height: 10px;
   border: 1.5px solid rgba(255, 255, 255, 0.10);
-  border-top-color: rgba(50, 216, 194,0.90);
+  border-top-color: rgba(0, 190, 224,0.90);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
@@ -542,13 +542,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .about-description a {
-  color: rgba(55, 220, 198,0.90);
+  color: rgba(0, 200, 232,0.90);
   text-decoration: none;
   transition: color 0.15s;
 }
 
 .about-description a:hover {
-  color: rgba(70, 228, 208,1);
+  color: rgba(0, 215, 240,1);
 }
 
 .github-button {
@@ -658,5 +658,5 @@ input[type="range"]::-moz-range-thumb {
 }
 
 #footer-logo-link:hover #logo {
-  filter: drop-shadow(0 0 6px rgba(45, 212, 191,0.7)) drop-shadow(0 0 12px rgba(45, 212, 191,0.4));
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
 }

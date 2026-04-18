@@ -282,7 +282,7 @@ function loadRobot(key) {
             new THREE.Vector3(0, 0, 0),
             new THREE.Vector3(robotPose.x, robotPose.y, 0),
           ]),
-          new THREE.LineBasicMaterial({ color: 0x5dd4bf })
+          new THREE.LineBasicMaterial({ color: 0x00b8d9 })
         );
         originLine.visible = axesHelper.visible;
         scene.add(originLine);
