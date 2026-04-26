@@ -29,94 +29,36 @@ import {
 import { ROBOTS } from './robots/registry.js';
 
 // ── Fade helpers ───────────────────────────────────────────────────────────────
-function glitchRobotOut(target, duration) {
+function fadeRobotOut(target, duration) {
   target.traverse(c => {
     if (c.isMesh && c.material) { c.material.transparent = true; c.material.needsUpdate = true; }
   });
   const start = performance.now();
   (function step() {
-    const elapsed = performance.now() - start;
-    const t       = Math.min(elapsed / duration, 1);
-    const freq    = 6 + t * 20;
-    const flicker = Math.sin(elapsed * freq * 0.01) > 0 ? 1 : 0;
-    const dropout = Math.random() > 0.96 ? 0 : 1;
-    target.traverse(c => {
-      if (c.isMesh && c.material)
-        c.material.opacity = (1 - t * 0.9) * flicker * dropout;
-    });
+    const t = Math.min((performance.now() - start) / duration, 1);
+    target.traverse(c => { if (c.isMesh && c.material) c.material.opacity = 1 - t; });
     if (t < 1) requestAnimationFrame(step);
     else scene.remove(target);
   })();
 }
 
-function glitchRobotIn(target, duration) {
-  // Capture original emissive values — never touch material.color
-  const origEmissive = new Map();
-  target.traverse(c => {
-    if (c.isMesh && c.material && c.material.emissive)
-      origEmissive.set(c.uuid, c.material.emissive.getHex());
-  });
-
+function fadeRobotIn(target, duration) {
   target.traverse(c => {
     if (c.isMesh && c.material) {
       c.material.transparent = true;
       c.material.opacity     = 0;
-      c.material.wireframe   = true;
-      if (c.material.emissive) c.material.emissive.setHex(0x003030);
       c.material.needsUpdate = true;
     }
   });
   const start = performance.now();
   (function step() {
-    const elapsed = performance.now() - start;
-    const t       = Math.min(elapsed / duration, 1);
-
-    if (t < 0.2) {
-      // Phase 1 — wireframe with teal emissive glow, flickering in
-      const flicker = Math.sin(elapsed * 0.18) > 0 ? 0.85 : 0.15;
-      target.traverse(c => {
-        if (!c.isMesh || !c.material) return;
-        c.material.wireframe = true;
-        c.material.opacity   = flicker;
-        if (c.material.emissive) c.material.emissive.setHex(0x003030);
-      });
-    } else if (t < 0.72) {
-      // Phase 2 — solid materialisation with emissive corruption flickers
-      const lt            = (t - 0.2) / 0.52;
-      const freq          = 16 - lt * 10;
-      const flicker       = Math.sin(elapsed * freq * 0.01) > -0.1 ? 1 : 0;
-      const glitchEmissive = [0x002222, 0x110000, 0x001111, 0x000000];
-      target.traverse(c => {
-        if (!c.isMesh || !c.material) return;
-        c.material.wireframe = false;
-        c.material.opacity   = lt * flicker;
-        if (c.material.emissive)
-          c.material.emissive.setHex(
-            Math.random() > 0.85
-              ? glitchEmissive[Math.floor(Math.random() * glitchEmissive.length)]
-              : 0x000000
-          );
-      });
-    } else {
-      // Phase 3 — settle, restore original emissive
-      const lt = (t - 0.72) / 0.28;
-      target.traverse(c => {
-        if (!c.isMesh || !c.material) return;
-        c.material.wireframe = false;
-        c.material.opacity   = 0.75 + lt * 0.25;
-        if (c.material.emissive)
-          c.material.emissive.setHex(origEmissive.get(c.uuid) ?? 0x000000);
-      });
-    }
-
+    const t = Math.min((performance.now() - start) / duration, 1);
+    target.traverse(c => { if (c.isMesh && c.material) c.material.opacity = t; });
     if (t < 1) requestAnimationFrame(step);
     else target.traverse(c => {
       if (c.isMesh && c.material) {
         c.material.transparent = false;
         c.material.opacity     = 1;
-        c.material.wireframe   = false;
-        if (c.material.emissive)
-          c.material.emissive.setHex(origEmissive.get(c.uuid) ?? 0x000000);
         c.material.needsUpdate = true;
       }
     });
@@ -170,7 +112,7 @@ function loadRobot(key) {
   sel.disabled = true;
 
   // ── Tear down previous robot ────────────────────────────────────────────────
-  if (robot)      { glitchRobotOut(robot, 250); robot = null; }
+  if (robot)      { fadeRobotOut(robot, 200); robot = null; }
   if (originLine) { scene.remove(originLine); originLine = null; }
   robotAxes = null;
 
@@ -303,7 +245,7 @@ function loadRobot(key) {
       robot.position.set(robotPose.x, robotPose.y, config.zOffset);
       robot.rotation.z = robotPose.theta;
       scene.add(robot);
-      glitchRobotIn(robot, 450);
+      fadeRobotIn(robot, 350);
       console.log('Robot in scene:', key);
     },
     (progress) => {
