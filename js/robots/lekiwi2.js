@@ -39,7 +39,7 @@ export const config = {
   },
 
   about: {
-    description: 'LeKiwi 2 combines the LeKiwi holonomic mobile base with a LePanTilt 2-DOF pan-tilt head, creating a mobile perception platform. The base uses 3 omni-wheels driven by serial bus servos; the head mounts an OAK-D-S2 depth camera on pan and tilt joints. Both are controlled simultaneously with full ROS 2 support.',
+    description: 'LeKiwi is an open-source mobile robot built on a holonomic drive, originally part of the LeRobot platform for robotics research and education. Built with 3D-printed parts, it includes serial bus servo motors with omni-wheels, a webcam, and supports the attachment of a SO100/101 robot arm. This build extends the base with a LiDAR, an IMU, an optional PT100 pan-tilt mechanism with a depth camera instead of a SO100 arm, and full ROS 2 support, making it a complete mobile perception platform.',
     githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
