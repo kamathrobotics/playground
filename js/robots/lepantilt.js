@@ -31,7 +31,7 @@ export const config = {
   },
 
   about: {
-    description: 'LePanTilt is a 2-DOF pan-tilt mechanism built from the first two joints of the SO100 arm, driven by serial bus servo motors. Designed as a compact camera or sensor mount with full ROS 2 support, it mounts an OAK-D-S2 depth camera for perception tasks.',
+    description: 'Pan Tilt 100 or PT100 is a 2-DOF pan-tilt mechanism built from the first two joints of the SO100 arm, driven by serial bus servo motors. Designed as a compact camera or sensor mount with full ROS 2 support, it mounts an OAK-D S2 depth camera for visual-inertial odometry and SLAM tasks.',
     githubUrl:   'https://github.com/adityakamath/lepantilt_ros2',
   },
 
