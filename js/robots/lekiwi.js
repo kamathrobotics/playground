@@ -10,8 +10,8 @@ import { wheeledProfile } from '../input/profiles/wheeled.js';
 export const config = {
   robotType: 'wheeled',
   title:    'LeKiwi Playground',
-  repoBase: 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/',
-  urdfPath: 'lekiwi_description/urdf/base/base.urdf',
+  repoBase: 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/base/',
+  urdfPath: 'base.urdf',
   zOffset:  0.0,  // robot base sits flush on the ground plane
 
   // Robot geometry passed to omni3 kinematics at runtime
@@ -43,17 +43,9 @@ export const config = {
     githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
-  /**
-   * Translate a mesh path from the URDF into a fetchable URL.
-   * LeKiwi uses ROS package:// URIs that must be rewritten to raw GitHub URLs.
-   */
   resolveMeshPath(path) {
-    const PKG = 'package://lekiwi_description/';
-    if (path.startsWith(PKG))
-      return path.replace(PKG, this.repoBase + 'lekiwi_description/');
-    if (path.startsWith('http://') || path.startsWith('https://'))
-      return path;
-    return this.repoBase + path;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return new URL(path, this.repoBase).href;
   },
 };
 

@@ -2,7 +2,7 @@
  * robots/lekiwi2.js — LeKiwi 2 robot configuration
  *
  * Drive type : 3-wheel omnidirectional base + 2-DOF pan-tilt head
- * URDF source: github.com/adityakamath/lepantilt_ros2
+ * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/)
  */
 import { updateJoints }    from '../kinematics/lekiwi2.js';
 import { lekiwi2Profile }  from '../input/profiles/lekiwi2.js';
@@ -10,7 +10,7 @@ import { lekiwi2Profile }  from '../input/profiles/lekiwi2.js';
 export const config = {
   robotType:  'mobile-arm',
   title:      'LeKiwi 2 Playground',
-  repoBase:   'https://raw.githubusercontent.com/adityakamath/lepantilt_ros2/main/lepantilt_description/urdf/',
+  repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/',
   urdfPath:   'lekiwi.urdf',
   zOffset:    0.0,
   controlsIds: ['wheeled-controls', 'pantilt-controls'],
@@ -39,7 +39,7 @@ export const config = {
 
   about: {
     description: 'LeKiwi 2 combines the LeKiwi holonomic mobile base with a LePanTilt 2-DOF pan-tilt head, creating a mobile perception platform. The base uses 3 omni-wheels driven by serial bus servos; the head mounts an OAK-D-S2 depth camera on pan and tilt joints. Both are controlled simultaneously with full ROS 2 support.',
-    githubUrl:   'https://github.com/adityakamath/lepantilt_ros2',
+    githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
   /**
