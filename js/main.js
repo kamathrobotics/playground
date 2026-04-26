@@ -197,13 +197,10 @@ function loadRobot(key) {
 
   // PT100 section — toggle row (LeKiwi only) + pan/tilt sliders + surrounding dividers
   const dropdownKey      = document.getElementById('robotSelect').value;
-  const showToggleRow    = dropdownKey === 'lekiwi';
-  const showPantilt      = !!config.pantilt;
-  const showPt100Section = showToggleRow || showPantilt;
-  document.getElementById('pt100-toggle-row').style.display    = showToggleRow    ? '' : 'none';
-  document.getElementById('pantilt-controls').style.display    = showPantilt      ? '' : 'none';
-  document.getElementById('pt100-divider-top').style.display   = showPt100Section ? '' : 'none';
-  document.getElementById('pt100-divider-bottom').style.display = showPt100Section ? '' : 'none';
+  const showToggleRow = dropdownKey === 'lekiwi';
+  const showPantilt   = !!config.pantilt;
+  document.getElementById('pt100-toggle-row').style.display = showToggleRow ? '' : 'none';
+  document.getElementById('pantilt-controls').style.display = showPantilt   ? '' : 'none';
 
   // Clear joint angle state on every robot switch
   currentJointAngles = {};
