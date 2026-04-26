@@ -24,7 +24,6 @@
       <div class="robot-selector">
         <select id="robotSelect">
           <option value="lekiwi" selected>LeKiwi</option>
-          <option value="lekiwi2">LeKiwi 2</option>
           <option value="akros">AKROS</option>
           <option value="kr003">KR003</option>
           <option value="so100">SO100</option>
@@ -93,6 +92,11 @@
               </div>
               <input type="range" id="angularVelocitySlider" min="0" max="1.57" step="0.01" value="0.785398">
             </div>
+          </div>
+
+          <!-- PT100 toggle: only visible when LeKiwi is selected -->
+          <div id="pt100-toggle-row" class="view-buttons" style="display:none">
+            <button id="pt100Button" class="toggle-button">PT100</button>
           </div>
 
         </div><!-- #wheeled-controls -->
