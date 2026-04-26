@@ -143,10 +143,12 @@ function loadRobot(key) {
   if (!entry) { console.error('Unknown robot key:', key); return; }
 
   // Capture outgoing robot type before overwriting activeRobot
-  const prevRobot = activeRobot;
-  const sameType  = prevRobot !== null &&
-                    !!prevRobot.config.robotType &&
-                    prevRobot.config.robotType === entry.config.robotType;
+  // mobile-arm shares the same (x, y, θ) pose space as wheeled, so treat them as equivalent
+  const poseFamily = t => (t === 'mobile-arm' ? 'wheeled' : t);
+  const prevRobot  = activeRobot;
+  const sameType   = prevRobot !== null &&
+                     !!prevRobot.config.robotType &&
+                     poseFamily(prevRobot.config.robotType) === poseFamily(entry.config.robotType);
 
   // Snapshot pose/vel — persist if same type, zero otherwise
   const nextPose = sameType ? { ...robotPose } : { x: 0, y: 0, theta: 0 };
