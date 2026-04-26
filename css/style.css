@@ -279,6 +279,25 @@ body {
   gap: 10px;
 }
 
+/* ── PT100 box — teal-tinted sub-section inside the Controls panel ── */
+#pt100-box {
+  border: 1px solid rgba(0, 184, 217, 0.22);
+  background: rgba(0, 120, 160, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#pt100-toggle-row {
+  display: flex;
+}
+
+#pt100-toggle-row #pt100Button {
+  flex: 1;
+}
+
 /* ── WASD key grid ── */
 .key-grid {
   display: flex;

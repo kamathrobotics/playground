@@ -13,7 +13,7 @@ export const config = {
   repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/',
   urdfPath:   'lekiwi.urdf',
   zOffset:    0.0,
-  controlsIds: ['wheeled-controls', 'pantilt-controls'],
+  controlsIds: ['wheeled-controls', 'pt100-box'],
 
   kinematics: {
     wheelRadius:  0.051,
