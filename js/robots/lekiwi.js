@@ -13,7 +13,7 @@ export const config = {
   repoBase: 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/base/',
   urdfPath: 'base.urdf',
   zOffset:  0.0,  // robot base sits flush on the ground plane
-  controlsIds: ['wheeled-controls', 'pt100-box'],
+  controlsIds: ['wheeled-controls'],
 
   // Robot geometry passed to omni3 kinematics at runtime
   kinematics: {

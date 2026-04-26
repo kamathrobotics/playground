@@ -94,11 +94,6 @@
             </div>
           </div>
 
-          <!-- PT100 toggle: only visible when LeKiwi is selected -->
-          <div id="pt100-toggle-row" class="view-buttons" style="display:none">
-            <button id="pt100Button" class="toggle-button">PT100</button>
-          </div>
-
         </div><!-- #wheeled-controls -->
 
         <!-- Arm-only controls: hidden when a wheeled robot is loaded -->
@@ -171,7 +166,14 @@
           </div>
         </div><!-- #arm-controls -->
 
-        <!-- Pan-tilt-only controls: hidden when a wheeled or arm robot is loaded -->
+        <div class="panel-divider" id="pt100-divider-top" style="display:none"></div>
+
+        <!-- Toggle button: only shown when LeKiwi base is selected -->
+        <div id="pt100-toggle-row" style="display:none">
+          <button id="pt100Button" class="toggle-button">PT100</button>
+        </div>
+
+        <!-- Pan/tilt sliders: shown when PT100 is active -->
         <div id="pantilt-controls" style="display:none">
           <div class="slider-group">
 
@@ -204,6 +206,8 @@
 
           </div>
         </div><!-- #pantilt-controls -->
+
+        <div class="panel-divider" id="pt100-divider-bottom" style="display:none"></div>
 
         <!-- E-Stop — always present regardless of robot type -->
         <div class="key estop-key estop-wide" id="key-x">

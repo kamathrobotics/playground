@@ -13,7 +13,8 @@ export const config = {
   repoBase:  'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/pantilt/',
   urdfPath:  'pantilt.urdf',
   zOffset:   0.0,
-  controlsId: 'pt100-box',
+  controlsIds: [],
+  pantilt: true,
 
   // No geometry params needed — pantilt.js does direct joint control
   kinematics: {},

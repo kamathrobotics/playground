@@ -187,19 +187,23 @@ function loadRobot(key) {
   // Reset arm slider values to defaults (no-op for wheeled profiles)
   if (entry.inputProfile.reset) entry.inputProfile.reset();
 
-  // Show/hide control groups based on robot type
-  const ALL_CONTROLS = ['wheeled-controls', 'arm-controls', 'pt100-box'];
+  // Show/hide main control groups
+  const ALL_CONTROLS = ['wheeled-controls', 'arm-controls'];
   const activeControls = config.controlsIds
     ?? (config.controlsId ? [config.controlsId]
       : [config.robotType === 'arm' ? 'arm-controls' : 'wheeled-controls']);
   for (const id of ALL_CONTROLS)
     document.getElementById(id).style.display = activeControls.includes(id) ? '' : 'none';
 
-  // Inside pt100-box: show toggle row only for LeKiwi dropdown; show sliders when pan-tilt joints present
-  const dropdownKey = document.getElementById('robotSelect').value;
-  document.getElementById('pt100-toggle-row').style.display = dropdownKey === 'lekiwi' ? '' : 'none';
-  document.getElementById('pantilt-controls').style.display =
-    (config.robotType === 'mobile-arm' || config.robotType === 'arm') ? '' : 'none';
+  // PT100 section — toggle row (LeKiwi only) + pan/tilt sliders + surrounding dividers
+  const dropdownKey      = document.getElementById('robotSelect').value;
+  const showToggleRow    = dropdownKey === 'lekiwi';
+  const showPantilt      = !!config.pantilt;
+  const showPt100Section = showToggleRow || showPantilt;
+  document.getElementById('pt100-toggle-row').style.display    = showToggleRow    ? '' : 'none';
+  document.getElementById('pantilt-controls').style.display    = showPantilt      ? '' : 'none';
+  document.getElementById('pt100-divider-top').style.display   = showPt100Section ? '' : 'none';
+  document.getElementById('pt100-divider-bottom').style.display = showPt100Section ? '' : 'none';
 
   // Clear joint angle state on every robot switch
   currentJointAngles = {};
