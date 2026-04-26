@@ -185,10 +185,12 @@ function loadRobot(key) {
   if (entry.inputProfile.reset) entry.inputProfile.reset();
 
   // Show/hide control groups based on robot type
-  const controlsId = config.controlsId ?? (config.robotType === 'arm' ? 'arm-controls' : 'wheeled-controls');
-  document.getElementById('wheeled-controls').style.display   = controlsId === 'wheeled-controls'  ? '' : 'none';
-  document.getElementById('arm-controls').style.display       = controlsId === 'arm-controls'      ? '' : 'none';
-  document.getElementById('pantilt-controls').style.display   = controlsId === 'pantilt-controls'  ? '' : 'none';
+  const ALL_CONTROLS = ['wheeled-controls', 'arm-controls', 'pantilt-controls'];
+  const activeControls = config.controlsIds
+    ?? (config.controlsId ? [config.controlsId]
+      : [config.robotType === 'arm' ? 'arm-controls' : 'wheeled-controls']);
+  for (const id of ALL_CONTROLS)
+    document.getElementById(id).style.display = activeControls.includes(id) ? '' : 'none';
 
   // Clear joint angle state on every robot switch
   currentJointAngles = {};
@@ -364,6 +366,22 @@ function animate() {
       // Arm: lerp joints toward slider targets every frame (no pose integration)
       const result = activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
       if (result && Object.keys(result).length) currentJointAngles = result;
+
+    } else if (activeRobot.config.robotType === 'mobile-arm') {
+      // Mobile arm: joint lerp (pan-tilt) + wheeled pose integration, always running
+      const result = activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
+      if (result && Object.keys(result).length) currentJointAngles = result;
+
+      if (velX !== 0 || velY !== 0 || velAngular !== 0) {
+        const cosT = Math.cos(robotPose.theta);
+        const sinT = Math.sin(robotPose.theta);
+        robotPose.x     += (velX * cosT - velY * sinT) * dt;
+        robotPose.y     += (velX * sinT + velY * cosT) * dt;
+        robotPose.theta += velAngular * dt;
+
+        robot.position.set(robotPose.x, robotPose.y, activeRobot.config.zOffset);
+        robot.rotation.z = robotPose.theta;
+      }
 
     } else if (velX !== 0 || velY !== 0 || velAngular !== 0) {
       // Wheeled: drive-type IK + integrate body pose in world frame

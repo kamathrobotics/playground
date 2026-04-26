@@ -13,10 +13,11 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import * as lekiwi  from './lekiwi.js';
-import * as kr003   from './kr003.js';
-import * as akros   from './akros.js';
-import * as so100   from './so100.js';
+import * as lekiwi   from './lekiwi.js';
+import * as lekiwi2  from './lekiwi2.js';
+import * as kr003    from './kr003.js';
+import * as akros    from './akros.js';
+import * as so100    from './so100.js';
 import * as lepantilt from './lepantilt.js';
 
 /**
@@ -36,6 +37,7 @@ import * as lepantilt from './lepantilt.js';
  */
 export const ROBOTS = {
   lekiwi,
+  lekiwi2,
   kr003,
   akros,
   so100,
