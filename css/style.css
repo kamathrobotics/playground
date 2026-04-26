@@ -267,7 +267,16 @@ body {
 }
 
 .collapsible.open .collapsible-content {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Wheeled controls: flex column for uniform internal gap ── */
+#wheeled-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* ── WASD key grid ── */
@@ -276,7 +285,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  margin-bottom: 14px;
 }
 
 .key-row {
@@ -484,7 +492,6 @@ input[type="range"]::-moz-range-thumb {
   height: 32px;
   flex-direction: row;
   gap: 8px;
-  margin-top: 14px;
 }
 
 .estop-label {
