@@ -2,7 +2,7 @@
  * robots/pantilt.js — LePanTilt robot configuration
  *
  * Robot type : 2-DOF pan-tilt mechanism
- * URDF source: github.com/adityakamath/lepantilt_ros2
+ * URDF source: github.com/adityakamath/lekiwi_ros2
  */
 import { updateJoints }   from '../kinematics/lepantilt.js';
 import { pantiltProfile } from '../input/profiles/lepantilt.js';
@@ -10,7 +10,7 @@ import { pantiltProfile } from '../input/profiles/lepantilt.js';
 export const config = {
   robotType: 'arm',
   title:     'LePanTilt Playground',
-  repoBase:  'https://raw.githubusercontent.com/adityakamath/lepantilt_ros2/main/lepantilt_description/urdf/',
+  repoBase:  'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/pantilt/',
   urdfPath:  'pantilt.urdf',
   zOffset:   0.0,
   controlsId: 'pantilt-controls',

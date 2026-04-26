@@ -11,7 +11,7 @@ export const config = {
   robotType: 'wheeled',
   title:    'LeKiwi Playground',
   repoBase: 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/',
-  urdfPath: 'lekiwi_description/urdf/base.urdf',
+  urdfPath: 'lekiwi_description/urdf/base/base.urdf',
   zOffset:  0.0,  // robot base sits flush on the ground plane
 
   // Robot geometry passed to omni3 kinematics at runtime
