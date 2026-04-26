@@ -9,7 +9,7 @@ import { lekiwi2Profile }  from '../input/profiles/lekiwi2.js';
 
 export const config = {
   robotType:  'mobile-arm',
-  title:      'LeKiwi 2 Playground',
+  title:      'LeKiwi Playground',
   repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/',
   urdfPath:   'lekiwi.urdf',
   zOffset:    0.0,
@@ -39,7 +39,7 @@ export const config = {
   },
 
   about: {
-    description: 'LeKiwi is an open-source mobile robot built on a holonomic drive, originally part of the LeRobot platform for robotics research and education. Built with 3D-printed parts, it includes serial bus servo motors with omni-wheels, a webcam, and supports the attachment of a SO100/101 robot arm. This build extends the base with a LiDAR, an IMU, an optional PT100 pan-tilt mechanism with a depth camera instead of a SO100 arm, and full ROS 2 support, making it a complete mobile perception platform.',
+    description: 'LeKiwi is an open-source mobile robot built on a holonomic drive, originally part of the LeRobot platform for robotics research and education. Built with 3D-printed parts, it includes serial bus servo motors with omni-wheels, a webcam, and supports the attachment of a SO100/101 robot arm. This build extends the base with a LiDAR, an IMU, an optional PT100 pan-tilt mechanism with a depth camera instead of a SO100 arm, and full ROS 2 support.',
     githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
