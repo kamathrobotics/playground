@@ -9,7 +9,7 @@ import { pantiltProfile } from '../input/profiles/lepantilt.js';
 
 export const config = {
   robotType: 'arm',
-  title:     'LePanTilt Playground',
+  title:     'PT100 Playground',
   repoBase:  'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/pantilt/',
   urdfPath:  'pantilt.urdf',
   zOffset:   0.0,
