@@ -1,5 +1,5 @@
 /**
- * input/profiles/arm.js — Input profile for robotic arms
+ * input/profiles/5dof_arm.js — Input profile for robotic arms
  *
  * Ignores keyboard input and the two wheeled velocity sliders.
  * Instead reads from arm-specific DOM sliders injected in index.html.

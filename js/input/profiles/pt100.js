@@ -1,5 +1,5 @@
 /**
- * input/profiles/pantilt.js — Input profile for pan-tilt mechanisms
+ * input/profiles/pt100.js — Input profile for pan-tilt mechanisms
  *
  * Ignores keyboard input and the two wheeled velocity sliders.
  * Instead reads from pan-tilt-specific DOM sliders injected in index.html.

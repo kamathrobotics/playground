@@ -1,5 +1,5 @@
 /**
- * kinematics/arm.js — Direct joint position control for robotic arms
+ * kinematics/5dof_arm.js — Direct joint position control for robotic arms
  *
  * No IK. Each joint lerps toward its slider-set target at a configurable
  * speed (rad/s). Returns current joint angles for telemetry.

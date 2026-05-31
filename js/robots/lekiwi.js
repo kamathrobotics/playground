@@ -1,25 +1,25 @@
 /**
  * robots/lekiwi.js — LeKiwi robot configuration
  *
- * Drive type : 3-wheel omnidirectional
- * URDF source: github.com/adityakamath/lekiwi_ros2
+ * Drive type : 3-wheel omnidirectional base + 2-DOF pan-tilt head
+ * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/k2.urdf)
  */
-import { updateJoints }   from '../kinematics/omni3.js';
-import { wheeledProfile } from '../input/profiles/wheeled.js';
+import { updateJoints }    from '../kinematics/lekiwi.js';
+import { lekiwiProfile }  from '../input/profiles/lekiwi.js';
 
 export const config = {
-  robotType: 'wheeled',
-  title:    'LeKiwi Playground',
-  repoBase: 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/base/',
-  urdfPath: 'base.urdf',
-  zOffset:  0.0,  // robot base sits flush on the ground plane
+  robotType:  'mobile-arm',
+  title:      'LeKiwi Playground',
+  repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/refs/heads/main/lekiwi_description/urdf/',
+  urdfPath:   'k2.urdf',
+  zOffset:    0.0,
   controlsIds: ['wheeled-controls'],
+  pantilt: true,
 
-  // Robot geometry passed to omni3 kinematics at runtime
   kinematics: {
-    wheelRadius:  0.051,     // metres (from URDF)
-    robotRadius:  0.132239,  // centre → wheel contact point (metres, from URDF)
-    maxWheelVel:  (2720 * 2 * Math.PI) / 4096,  // ≈ 4.17 rad/s (motor limit from URDF)
+    wheelRadius:  0.051,
+    robotRadius:  0.132239,
+    maxWheelVel:  (2720 * 2 * Math.PI) / 4096,
   },
 
   telemetry: {
@@ -27,14 +27,13 @@ export const config = {
     colWidths: ['9ch', '9ch', '11ch'],
     rows: [
       [
-        { id: 'x',     label: 'x', getValue: s => s.pose.x.toFixed(2) + ' m' },
-        { id: 'y',     label: 'y', getValue: s => s.pose.y.toFixed(2) + ' m' },
-        { id: 'theta', label: 'θ', getValue: s => (((s.pose.theta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI)).toFixed(2) + ' rad' },
+        { id: 'x',     label: 'x',    getValue: s => s.pose.x.toFixed(2) + ' m' },
+        { id: 'y',     label: 'y',    getValue: s => s.pose.y.toFixed(2) + ' m' },
+        { id: 'theta', label: 'θ',    getValue: s => (((s.pose.theta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI)).toFixed(2) + ' rad' },
       ],
       [
-        { id: 'u',     label: 'u', getValue: s => s.vel.vx.toFixed(2)    + ' m/s' },
-        { id: 'v',     label: 'v', getValue: s => s.vel.vy.toFixed(2)    + ' m/s' },
-        { id: 'omega', label: 'ω', getValue: s => s.vel.omega.toFixed(2) + ' rad/s' },
+        { id: 'pan',  label: 'pan',  getValue: s => (s.joints?.pan_joint  ?? 0).toFixed(2) + ' rad' },
+        { id: 'tilt', label: 'tilt', getValue: s => (s.joints?.tilt_joint ?? 0).toFixed(2) + ' rad' },
       ],
     ],
   },
@@ -44,11 +43,12 @@ export const config = {
     githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
+  /** Mesh paths are relative to the URDF's base URL — no package:// remapping needed. */
   resolveMeshPath(path) {
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return new URL(path, this.repoBase).href;
+    return this.repoBase + path;
   },
 };
 
 export { updateJoints };
-export { wheeledProfile as inputProfile };
+export { lekiwiProfile as inputProfile };

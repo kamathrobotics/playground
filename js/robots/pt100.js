@@ -1,11 +1,11 @@
 /**
- * robots/pantilt.js — LePanTilt robot configuration
+ * robots/pt100.js — PT100 robot configuration
  *
  * Robot type : 2-DOF pan-tilt mechanism
  * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/pantilt/)
  */
-import { updateJoints }   from '../kinematics/lepantilt.js';
-import { pantiltProfile } from '../input/profiles/lepantilt.js';
+import { updateJoints }   from '../kinematics/pt100.js';
+import { pantiltProfile } from '../input/profiles/pt100.js';
 
 export const config = {
   robotType: 'arm',

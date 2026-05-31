@@ -1,14 +1,14 @@
 /**
- * kinematics/lekiwi2.js — Combined kinematics for LeKiwi 2
+ * kinematics/lekiwi.js — Combined kinematics for LeKiwi
  *
  * Drives the 3-wheel omni base (via omni3) and the 2-DOF pan-tilt
- * mechanism (via lepantilt) in a single updateJoints call.
+ * mechanism (via pt100) in a single updateJoints call.
  *
  * Used by: LeKiwi 2
  */
 
 import { updateJoints as omni3Update }    from './omni3.js';
-import { updateJoints as pantiltUpdate }  from './lepantilt.js';
+import { updateJoints as pantiltUpdate }  from './pt100.js';
 
 /**
  * @param {object} robot     URDFRobot instance

@@ -14,11 +14,10 @@
  */
 
 import * as lekiwi   from './lekiwi.js';
-import * as lekiwi2  from './lekiwi2.js';
 import * as kr003    from './kr003.js';
 import * as akros    from './akros.js';
 import * as so100    from './so100.js';
-import * as lepantilt from './lepantilt.js';
+import * as pt100    from './pt100.js';
 
 /**
  * ROBOTS — map from dropdown option value → { config, updateJoints, inputProfile }
@@ -36,10 +35,9 @@ import * as lepantilt from './lepantilt.js';
  *   inputProfile                               — profile from js/input/profiles/
  */
 export const ROBOTS = {
-  lekiwi: lekiwi2,
-  lekiwi2,
+  lekiwi,
   kr003,
   akros,
   so100,
-  lepantilt,
+  pt100,
 };

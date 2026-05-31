@@ -1,10 +1,10 @@
 /**
- * kinematics/pantilt.js — Direct joint position control for pan-tilt mechanisms
+ * kinematics/pt100.js — Direct joint position control for pan-tilt mechanisms
  *
  * No IK. Each joint lerps toward its slider-set target at a configurable
  * speed (rad/s). Returns current joint angles for telemetry.
  *
- * Used by: LePanTilt
+ * Used by: PT100
  */
 
 const JOINT_NAMES = [

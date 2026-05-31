@@ -4,8 +4,8 @@
  * Robot type : 6-DOF robotic arm
  * URDF source: github.com/adityakamath/soarm_ros2
  */
-import { updateJoints } from '../kinematics/arm.js';
-import { armProfile }   from '../input/profiles/arm.js';
+import { updateJoints } from '../kinematics/5dof_arm.js';
+import { armProfile }   from '../input/profiles/5dof_arm.js';
 
 export const config = {
   robotType: 'arm',
@@ -14,7 +14,7 @@ export const config = {
   urdfPath:  'so100.urdf',
   zOffset:     0.0,
 
-  // No geometry params needed — arm.js does direct joint control
+  // No geometry params needed — 5dof_arm.js does direct joint control
   kinematics: {},
 
   telemetry: {
