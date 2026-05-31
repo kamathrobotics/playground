@@ -76,9 +76,6 @@ const TELEM_SMOOTH = 0.2;
 let lastTime    = performance.now();
 let loadGen     = 0;      // bumped on every robot switch; stale callbacks check against it
 let activeRobot = null;   // reference to active entry from ROBOTS
-let pt100Enabled = false; // PT100 head attached to LeKiwi
-
-
 // ── Robot loader ───────────────────────────────────────────────────────────────
 function loadRobot(key) {
   const entry = ROBOTS[key];
@@ -137,12 +134,10 @@ function loadRobot(key) {
   for (const id of ALL_CONTROLS)
     document.getElementById(id).style.display = activeControls.includes(id) ? '' : 'none';
 
-  // PT100 section — toggle row (LeKiwi only) + pan/tilt sliders + surrounding dividers
-  const dropdownKey      = document.getElementById('robotSelect').value;
-  const showToggleRow = dropdownKey === 'lekiwi';
-  const showPantilt   = !!config.pantilt;
-  document.getElementById('pt100-toggle-row').style.display = showToggleRow ? '' : 'none';
-  document.getElementById('pantilt-controls').style.display = showPantilt   ? '' : 'none';
+  // PT100 section — pan/tilt sliders (shown whenever config.pantilt is true)
+  const showPantilt = !!config.pantilt;
+  document.getElementById('pt100-toggle-row').style.display = 'none';
+  document.getElementById('pantilt-controls').style.display = showPantilt ? '' : 'none';
 
   // Clear joint angle state on every robot switch
   currentJointAngles = {};
@@ -440,19 +435,9 @@ document.getElementById('robotSelect').addEventListener('change', (e) => {
   } else {
     history.replaceState(null, '', `?robot=${key}`);
   }
-  // Reset PT100 toggle when switching away from LeKiwi
-  if (key !== 'lekiwi') {
-    pt100Enabled = false;
-    document.getElementById('pt100Button').classList.remove('active');
-  }
   loadRobot(key);
 });
 
-document.getElementById('pt100Button').addEventListener('click', () => {
-  pt100Enabled = !pt100Enabled;
-  document.getElementById('pt100Button').classList.toggle('active', pt100Enabled);
-  loadRobot(pt100Enabled ? 'lekiwi2' : 'lekiwi');
-});
 
 document.querySelectorAll('.collapsible-header').forEach(header => {
   header.addEventListener('click', () => {

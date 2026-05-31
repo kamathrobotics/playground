@@ -1,0 +1,285 @@
+<?xml version="1.0" ?>
+<!--
+  LeKiwi robot URDF — base + PT100 pan-tilt head
+  Compiled from xacro sources in adityakamath/lekiwi_ros2
+
+  Mesh URLs point directly to raw GitHub assets.
+-->
+<robot name="k2">
+
+  <!-- ── Materials ─────────────────────────────────────────────────────────── -->
+  <material name="light_grey">
+    <color rgba="0.8 0.8 0.8 1.0"/>
+  </material>
+  <material name="charcoal">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+  <!-- ── Base footprint ────────────────────────────────────────────────────── -->
+  <link name="base_footprint"/>
+
+  <joint name="lekiwi_mount_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.040640" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Base link ─────────────────────────────────────────────────────────── -->
+  <link name="base_link">
+    <inertial>
+      <mass value="2.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.02"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 4.712389"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/lekiwi_base.stl"/>
+      </geometry>
+      <material name="light_grey"/>
+    </visual>
+  </link>
+
+  <!-- ── Laser ─────────────────────────────────────────────────────────────── -->
+  <link name="laser_link">
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/ld06_lidar.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <link name="laser_frame"/>
+
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_link"/>
+    <origin xyz="-0.045042 0 0.091500" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="laser_frame_joint" type="fixed">
+    <parent link="laser_link"/>
+    <child link="laser_frame"/>
+    <origin xyz="0 0 0.027000" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── IMU ───────────────────────────────────────────────────────────────── -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/bno055_imu.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <link name="imu_frame"/>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.044000 0 0.080000" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="imu_frame_joint" type="fixed">
+    <parent link="imu_link"/>
+    <child link="imu_frame"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ── Wheels ────────────────────────────────────────────────────────────── -->
+  <link name="left_wheel_link">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/omni_wheel.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <link name="back_wheel_link">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/omni_wheel.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <link name="right_wheel_link">
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/base/omni_wheel.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <!-- left: 60° from +X -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <origin xyz="0.066120 0.114522 0.010360" rpy="0 1.570796 1.047198"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="2.942" velocity="4.433204"/>
+  </joint>
+
+  <!-- back: 180° from +X -->
+  <joint name="back_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="back_wheel_link"/>
+    <origin xyz="-0.132239 0.000000 0.010360" rpy="0 1.570796 3.141593"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="2.942" velocity="4.433204"/>
+  </joint>
+
+  <!-- right: −60° from +X -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <origin xyz="0.066120 -0.114522 0.010360" rpy="0 1.570796 -1.047198"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="2.942" velocity="4.433204"/>
+  </joint>
+
+  <!-- ── Pan-tilt head ─────────────────────────────────────────────────────── -->
+  <joint name="pantilt_mount_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="pantilt_base_link"/>
+    <origin xyz="0.032725 0 0.052500" rpy="0 0 0"/>
+  </joint>
+
+  <link name="pantilt_base_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.570796"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/pantilt_base.stl"/>
+      </geometry>
+      <material name="light_grey"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.570796"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/pan_motor.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <joint name="pan_joint" type="revolute">
+    <parent link="pantilt_base_link"/>
+    <child link="pan_link"/>
+    <origin xyz="0.045200 0 0.016500" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.570796" upper="1.570796" effort="2.942" velocity="1000000"/>
+  </joint>
+
+  <link name="pan_link">
+    <inertial>
+      <mass value="0.119226"/>
+      <origin xyz="-9.07886e-05 0.0590972 0.031089" rpy="0 0 0"/>
+      <inertia ixx="5.94278e-05" ixy="0" ixz="0" iyy="5.89975e-05" iyz="0" izz="3.13712e-05"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796 0 1.570796"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/pan_joint.stl"/>
+      </geometry>
+      <material name="light_grey"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0" rpy="1.570796 0 1.570796"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/tilt_motor.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <joint name="tilt_joint" type="revolute">
+    <parent link="pan_link"/>
+    <child link="tilt_link"/>
+    <origin xyz="0.030600 0 0.102500" rpy="-1.570796 1.570796 0"/>
+    <axis xyz="0 0 -1"/>
+    <limit lower="-1.570796" upper="1.570796" effort="2.942" velocity="1000000"/>
+  </joint>
+
+  <link name="tilt_link">
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.119000 0.075800 -0.000200" rpy="1.570796 -1.570796 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/tilt_joint.stl"/>
+      </geometry>
+      <material name="light_grey"/>
+    </visual>
+  </link>
+
+  <!-- ── OAK-D S2 camera ───────────────────────────────────────────────────── -->
+  <link name="oak_link"/>
+
+  <joint name="oak_link_center_joint" type="fixed">
+    <parent link="tilt_link"/>
+    <child link="oak_link"/>
+    <origin xyz="-0.030600 -0.012165 0" rpy="-1.570796 0 -1.570796"/>
+  </joint>
+
+  <link name="oak_imu_frame"/>
+
+  <joint name="oak_imu_frame_joint" type="fixed">
+    <parent link="oak_link"/>
+    <child link="oak_imu_frame"/>
+    <origin xyz="-0.008000 -0.037945 -0.000790" rpy="3.141593 1.570796 0"/>
+  </joint>
+
+  <link name="oak_link_model_origin">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/meshes/pantilt/oakd_s2.stl"/>
+      </geometry>
+      <material name="charcoal"/>
+    </visual>
+  </link>
+
+  <joint name="oak_link_model_origin_joint" type="fixed">
+    <parent link="oak_link"/>
+    <child link="oak_link_model_origin"/>
+    <origin xyz="0 0 0" rpy="1.570796 0 1.570796"/>
+  </joint>
+
+</robot>

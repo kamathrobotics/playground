@@ -36,7 +36,7 @@ import * as lepantilt from './lepantilt.js';
  *   inputProfile                               — profile from js/input/profiles/
  */
 export const ROBOTS = {
-  lekiwi,
+  lekiwi: lekiwi2,
   lekiwi2,
   kr003,
   akros,

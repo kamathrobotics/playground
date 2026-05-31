@@ -10,7 +10,7 @@ import { lekiwi2Profile }  from '../input/profiles/lekiwi2.js';
 export const config = {
   robotType:  'mobile-arm',
   title:      'LeKiwi Playground',
-  repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/',
+  repoBase:   '/assets/urdf/',
   urdfPath:   'lekiwi.urdf',
   zOffset:    0.0,
   controlsIds: ['wheeled-controls'],
@@ -48,8 +48,7 @@ export const config = {
    * so that ../meshes/... traversal works correctly.
    */
   resolveMeshPath(path) {
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return new URL(path, this.repoBase).href;
+    return path;
   },
 };
 
