@@ -10,7 +10,7 @@ import { pantiltProfile } from '../input/profiles/pt100.js';
 export const config = {
   robotType: 'arm',
   title:     'PT100 Playground',
-  repoBase:  'https://raw.githubusercontent.com/adityakamath/pantilt100/refs/heads/main/pt100_description/urdf/',
+  repoBase:  'https://raw.githubusercontent.com/adityakamath/pantilt100/main/pt100_description/urdf/',
   urdfPath:  'pantilt.urdf',
   zOffset:   0.0,
   controlsIds: [],
