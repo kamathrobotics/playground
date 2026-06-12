@@ -2,7 +2,7 @@
  * robots/lekiwi.js — LeKiwi robot configuration
  *
  * Drive type : 3-wheel omnidirectional base + 2-DOF pan-tilt head
- * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/k2.urdf)
+ * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/base_pantilt/base_pantilt.urdf)
  */
 import { updateJoints }    from '../kinematics/lekiwi.js';
 import { lekiwiProfile }  from '../input/profiles/lekiwi.js';
@@ -10,8 +10,8 @@ import { lekiwiProfile }  from '../input/profiles/lekiwi.js';
 export const config = {
   robotType:  'mobile-arm',
   title:      'LeKiwi Playground',
-  repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/refs/heads/main/lekiwi_description/urdf/',
-  urdfPath:   'k2.urdf',
+  repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/base_pantilt/',
+  urdfPath:   'base_pantilt.urdf',
   zOffset:    0.0,
   controlsIds: ['wheeled-controls'],
   pantilt: true,
