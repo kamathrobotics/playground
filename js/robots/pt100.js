@@ -2,7 +2,7 @@
  * robots/pt100.js — PT100 robot configuration
  *
  * Robot type : 2-DOF pan-tilt mechanism
- * URDF source: github.com/adityakamath/lekiwi_ros2 (lekiwi_description/urdf/pantilt/)
+ * URDF source: github.com/adityakamath/pantilt100 (pt100_description/urdf/)
  */
 import { updateJoints }   from '../kinematics/pt100.js';
 import { pantiltProfile } from '../input/profiles/pt100.js';
@@ -10,7 +10,7 @@ import { pantiltProfile } from '../input/profiles/pt100.js';
 export const config = {
   robotType: 'arm',
   title:     'PT100 Playground',
-  repoBase:  'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/pantilt/',
+  repoBase:  'https://raw.githubusercontent.com/adityakamath/pantilt100/refs/heads/main/pt100_description/urdf/',
   urdfPath:  'pantilt.urdf',
   zOffset:   0.0,
   controlsIds: [],
