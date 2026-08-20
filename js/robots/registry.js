@@ -16,8 +16,8 @@
 import * as lekiwi   from './lekiwi.js';
 import * as kr003    from './kr003.js';
 import * as akros    from './akros.js';
-import * as so100    from './so100.js';
-import * as pt100    from './pt100.js';
+import * as so101    from './so101.js';
+import * as pt101    from './pt101.js';
 
 /**
  * ROBOTS — map from dropdown option value → { config, updateJoints, inputProfile }
@@ -38,6 +38,6 @@ export const ROBOTS = {
   lekiwi,
   kr003,
   akros,
-  so100,
-  pt100,
+  so101,
+  pt101,
 };

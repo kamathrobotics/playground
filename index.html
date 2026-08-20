@@ -26,8 +26,8 @@
           <option value="lekiwi" selected>LeKiwi</option>
           <option value="akros">AKROS</option>
           <option value="kr003">KR003</option>
-          <option value="so100">SO100</option>
-          <option value="pt100">PT100</option>
+          <option value="so101">SO101</option>
+          <option value="pt101">PT101</option>
         </select>
       </div>
       <button id="infoButton" class="info-button" aria-label="About this robot">ⓘ</button>
@@ -105,7 +105,7 @@
                 <span class="slider-label">Shoulder Pan</span>
                 <span class="slider-value-badge"><span id="armSliderValue_shoulder_pan">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_shoulder_pan" min="-2" max="2" step="0.01" value="0"
+              <input type="range" id="armSlider_shoulder_pan" min="-1.91986" max="1.91986" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_shoulder_pan').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -114,7 +114,7 @@
                 <span class="slider-label">Shoulder Lift</span>
                 <span class="slider-value-badge"><span id="armSliderValue_shoulder_lift">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_shoulder_lift" min="0" max="3.5" step="0.01" value="0"
+              <input type="range" id="armSlider_shoulder_lift" min="-1.74533" max="1.74533" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_shoulder_lift').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -123,7 +123,7 @@
                 <span class="slider-label">Elbow Flex</span>
                 <span class="slider-value-badge"><span id="armSliderValue_elbow_flex">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_elbow_flex" min="-3.14159" max="0" step="0.01" value="0"
+              <input type="range" id="armSlider_elbow_flex" min="-1.69" max="1.69" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_elbow_flex').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -132,7 +132,7 @@
                 <span class="slider-label">Wrist Flex</span>
                 <span class="slider-value-badge"><span id="armSliderValue_wrist_flex">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_wrist_flex" min="-2.5" max="1.2" step="0.01" value="0"
+              <input type="range" id="armSlider_wrist_flex" min="-1.65806" max="1.65806" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_wrist_flex').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -141,7 +141,7 @@
                 <span class="slider-label">Wrist Roll</span>
                 <span class="slider-value-badge"><span id="armSliderValue_wrist_roll">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_wrist_roll" min="-3.14159" max="3.14159" step="0.01" value="0"
+              <input type="range" id="armSlider_wrist_roll" min="-2.74385" max="2.84121" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_wrist_roll').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -150,7 +150,7 @@
                 <span class="slider-label">Gripper</span>
                 <span class="slider-value-badge"><span id="armSliderValue_gripper">0.00</span> rad</span>
               </div>
-              <input type="range" id="armSlider_gripper" min="-0.2" max="2.0" step="0.01" value="0"
+              <input type="range" id="armSlider_gripper" min="-1.74533" max="0.174533" step="0.01" value="0"
                 oninput="document.getElementById('armSliderValue_gripper').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
@@ -167,11 +167,11 @@
         </div><!-- #arm-controls -->
 
         <!-- Toggle button: only shown when LeKiwi base is selected -->
-        <div id="pt100-toggle-row" style="display:none">
-          <button id="pt100Button" class="toggle-button">Pan Tilt Module</button>
+        <div id="pt101-toggle-row" style="display:none">
+          <button id="pt101Button" class="toggle-button">Pan Tilt Module</button>
         </div>
 
-        <!-- Pan/tilt sliders: shown when PT100 is active -->
+        <!-- Pan/tilt sliders: shown when PT101 is active -->
         <div id="pantilt-controls" style="display:none">
           <div class="slider-group">
 

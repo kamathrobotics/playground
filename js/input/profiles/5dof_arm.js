@@ -13,12 +13,12 @@ import { isEstopActive } from '../../input.js';
 
 // Joint configuration: DOM id suffix, URDF joint name, URDF limits, default
 const ARM_JOINTS = [
-  { id: 'shoulder_pan',  name: 'shoulder_pan_joint',  min: -2.0,          max: 2.0,     default: 0.0 },
-  { id: 'shoulder_lift', name: 'shoulder_lift_joint', min:  0.0,          max: 3.5,     default: 0.0 },
-  { id: 'elbow_flex',    name: 'elbow_flex_joint',    min: -Math.PI,      max: 0.0,     default: 0.0 },
-  { id: 'wrist_flex',    name: 'wrist_flex_joint',    min: -2.5,          max: 1.2,     default: 0.0 },
-  { id: 'wrist_roll',    name: 'wrist_roll_joint',    min: -Math.PI,      max: Math.PI, default: 0.0 },
-  { id: 'gripper',       name: 'gripper_joint',       min: -0.2,          max: 2.0,     default: 0.0 },
+  { id: 'shoulder_pan',  name: 'shoulder_pan_joint',  min: -1.91986, max: 1.91986,  default: 0.0 },
+  { id: 'shoulder_lift', name: 'shoulder_lift_joint', min: -1.74533, max: 1.74533,  default: 0.0 },
+  { id: 'elbow_flex',    name: 'elbow_flex_joint',    min: -1.69,    max: 1.69,     default: 0.0 },
+  { id: 'wrist_flex',    name: 'wrist_flex_joint',    min: -1.65806, max: 1.65806,  default: 0.0 },
+  { id: 'wrist_roll',    name: 'wrist_roll_joint',    min: -2.74385, max: 2.84121,  default: 0.0 },
+  { id: 'gripper',       name: 'gripper_joint',       min: -1.74533, max: 0.174533, default: 0.0 },
 ];
 
 const SPEED_DEFAULT = 1.0;

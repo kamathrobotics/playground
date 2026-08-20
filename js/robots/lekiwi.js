@@ -39,14 +39,25 @@ export const config = {
   },
 
   about: {
-    description: 'LeKiwi is an open-source mobile robot built on a holonomic drive, originally part of the LeRobot platform for robotics research and education. Built with 3D-printed parts, it includes serial bus servo motors with omni-wheels, a webcam, and supports the attachment of a SO100/101 robot arm. This build extends the base with a LiDAR, an IMU, an optional PT100 pan-tilt mechanism with a depth camera instead of a SO100 arm, and full ROS 2 support.',
+    description: 'LeKiwi is an open-source mobile robot built on a holonomic drive, originally part of the LeRobot platform for robotics research and education. Built with 3D-printed parts, it includes serial bus servo motors with omni-wheels, a webcam, and supports the attachment of a SO101 robot arm. This build extends the base with a LiDAR, an IMU, an optional PT101 pan-tilt mechanism with a depth camera instead of a SO101 arm, and full ROS 2 support.',
     githubUrl:   'https://github.com/adityakamath/lekiwi_ros2',
   },
 
-  /** Mesh paths are relative to the URDF's base URL — no package:// remapping needed. */
+  /**
+   * Mesh paths come from the URDF's package:// URIs (e.g. "package://lekiwi_description/
+   * meshes/lekiwi_base.stl"), which urdf-loader passes through as "/lekiwi_description/
+   * meshes/lekiwi_base.stl" — a ROS package name, not a path relative to repoBase (which
+   * points at urdf/base_pantilt/, three directories deeper than where the mesh dirs live).
+   * lekiwi_description meshes are in this repo; pt_description is a git submodule (payloads/
+   * pantilt_ros2) pointing at the separate pantilt_ros2 repo — the same one PT101 uses.
+   */
   resolveMeshPath(path) {
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return this.repoBase + path;
+    const clean = path.replace(/^\/+/, '');
+    if (clean.startsWith('pt_description/')) {
+      return 'https://raw.githubusercontent.com/adityakamath/pantilt_ros2/main/' + clean;
+    }
+    return 'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/' + clean;
   },
 };
 

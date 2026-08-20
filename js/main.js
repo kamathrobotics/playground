@@ -27,6 +27,7 @@ import {
 } from './input.js';
 
 import { ROBOTS } from './robots/registry.js';
+import { SelfCollisionChecker, CollisionResolver } from './collision/collision.js';
 
 // ── Fade helpers ───────────────────────────────────────────────────────────────
 function fadeRobotOut(target, duration) {
@@ -134,9 +135,9 @@ function loadRobot(key) {
   for (const id of ALL_CONTROLS)
     document.getElementById(id).style.display = activeControls.includes(id) ? '' : 'none';
 
-  // PT100 section — pan/tilt sliders (shown whenever config.pantilt is true)
+  // PT101 section — pan/tilt sliders (shown whenever config.pantilt is true)
   const showPantilt = !!config.pantilt;
-  document.getElementById('pt100-toggle-row').style.display = 'none';
+  document.getElementById('pt101-toggle-row').style.display = 'none';
   document.getElementById('pantilt-controls').style.display = showPantilt ? '' : 'none';
 
   // Clear joint angle state on every robot switch
@@ -195,6 +196,20 @@ function loadRobot(key) {
     status.textContent = '✓ Robot loaded';
     setTimeout(() => { if (myGen === loadGen) status.classList.remove('visible'); }, 2000);
     sel.disabled = false;
+
+    // Build a self-collision resolver for joint-driven robots (arms + pan-tilt) so
+    // slider-commanded moves can't drive the robot's own links into each other.
+    if (robot && (config.robotType === 'arm' || config.pantilt)) {
+      try {
+        const checker = new SelfCollisionChecker(robot);
+        const commandableJoints = Object.keys(robot.joints)
+          .filter((name) => robot.joints[name].jointType === 'revolute');
+        robot.userData.collisionResolver = new CollisionResolver(checker, commandableJoints);
+        console.log('Self-collision checker:', checker.checkedPairs.length, 'pair(s) monitored');
+      } catch (err) {
+        console.error('Self-collision checker failed to build:', err);
+      }
+    }
   };
 
   mgr.onError = (url) => {

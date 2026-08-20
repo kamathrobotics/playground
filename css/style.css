@@ -279,12 +279,12 @@ body {
   gap: 10px;
 }
 
-/* ── PT100 toggle row — full-width button ── */
-#pt100-toggle-row {
+/* ── PT101 toggle row — full-width button ── */
+#pt101-toggle-row {
   display: flex;
 }
 
-#pt100Button {
+#pt101Button {
   flex: 1;
 }
 

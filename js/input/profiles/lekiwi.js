@@ -11,7 +11,7 @@
 
 import { isEstopActive }  from '../../input.js';
 import { wheeledProfile } from './wheeled.js';
-import { pantiltProfile } from './pt100.js';
+import { pantiltProfile } from './pt101.js';
 
 export const lekiwiProfile = {
 
