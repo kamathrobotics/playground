@@ -1,51 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <title>Kamath Robotics Favicon</title>
-  <rect x="0" y="0" width="64" height="64" fill="#0a0a0a"/>
-  <g>
-    <rect x="12" y="21" width="3" height="3" fill="#ff8c00"/>
-<rect x="9" y="24" width="3" height="3" fill="#ff8c00"/>
-<rect x="6" y="27" width="3" height="3" fill="#ff8c00"/>
-<rect x="3" y="30" width="3" height="3" fill="#ff8c00"/>
-<rect x="6" y="33" width="3" height="3" fill="#ff8c00"/>
-<rect x="9" y="36" width="3" height="3" fill="#ff8c00"/>
-<rect x="12" y="39" width="3" height="3" fill="#ff8c00"/>
-<rect x="18" y="21" width="3" height="3" fill="#ffffff"/>
-<rect x="27" y="21" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="24" width="3" height="3" fill="#ffffff"/>
-<rect x="24" y="24" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="27" width="3" height="3" fill="#ffffff"/>
-<rect x="21" y="27" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="30" width="3" height="3" fill="#ffffff"/>
-<rect x="21" y="30" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="33" width="3" height="3" fill="#ffffff"/>
-<rect x="24" y="33" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="36" width="3" height="3" fill="#ffffff"/>
-<rect x="27" y="36" width="3" height="3" fill="#ffffff"/>
-<rect x="18" y="39" width="3" height="3" fill="#ffffff"/>
-<rect x="27" y="39" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="21" width="3" height="3" fill="#ffffff"/>
-<rect x="36" y="21" width="3" height="3" fill="#ffffff"/>
-<rect x="39" y="21" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="24" width="3" height="3" fill="#ffffff"/>
-<rect x="42" y="24" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="27" width="3" height="3" fill="#ffffff"/>
-<rect x="42" y="27" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="30" width="3" height="3" fill="#ffffff"/>
-<rect x="36" y="30" width="3" height="3" fill="#ffffff"/>
-<rect x="39" y="30" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="33" width="3" height="3" fill="#ffffff"/>
-<rect x="39" y="33" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="36" width="3" height="3" fill="#ffffff"/>
-<rect x="42" y="36" width="3" height="3" fill="#ffffff"/>
-<rect x="33" y="39" width="3" height="3" fill="#ffffff"/>
-<rect x="42" y="39" width="3" height="3" fill="#ffffff"/>
-<rect x="48" y="21" width="3" height="3" fill="#ff8c00"/>
-<rect x="51" y="24" width="3" height="3" fill="#ff8c00"/>
-<rect x="54" y="27" width="3" height="3" fill="#ff8c00"/>
-<rect x="57" y="30" width="3" height="3" fill="#ff8c00"/>
-<rect x="54" y="33" width="3" height="3" fill="#ff8c00"/>
-<rect x="51" y="36" width="3" height="3" fill="#ff8c00"/>
-<rect x="48" y="39" width="3" height="3" fill="#ff8c00"/>
+<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Kamath Robotics mark">
+  <title>Kamath Robotics mark</title>
+  <rect width="512" height="512" fill="#0a0a0a"></rect>
+  <g transform="translate(48 48) scale(5.2) translate(-10 -10)">
+    <g transform="rotate(0 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#EE6C08"></rect></g>
+      <g transform="rotate(45 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#EC5800"></rect></g>
+      <g transform="rotate(90 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#EE6C08"></rect></g>
+      <g transform="rotate(135 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#F07F0F"></rect></g>
+      <g transform="rotate(180 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#F29317"></rect></g>
+      <g transform="rotate(225 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#F4A61E"></rect></g>
+      <g transform="rotate(270 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#F29317"></rect></g>
+      <g transform="rotate(315 50 50)"><rect x="40" y="12" width="20" height="7" rx="3.5" fill="#F07F0F"></rect></g>
+    <circle cx="50" cy="50" r="25" fill="none" stroke="#FFFFFF" stroke-width="7"></circle>
+    <g transform="translate(-3.9 0)" stroke="#FFFFFF" stroke-width="7" stroke-linecap="butt" stroke-linejoin="round" fill="none">
+      <path d="M62.25 28.78 L50 50 L62.25 71.22"></path>
+    </g>
   </g>
 </svg>
