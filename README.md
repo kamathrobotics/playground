@@ -4,7 +4,6 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES%20Modules-yellow?style=flat&logo=javascript&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=flat&logo=threedotjs&logoColor=white)
 [![CI](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/Live-playground.kamathrobotics.com-blue?style=flat&logo=cloudflare&logoColor=white)](https://playground.kamathrobotics.com)
 ![License](https://img.shields.io/github/license/kamathrobotics/playground?label=License)
 
 Interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
