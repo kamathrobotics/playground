@@ -656,6 +656,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   padding: 0 12px;
+  padding-right: 0;
   justify-content: space-between;
   z-index: 10;
 }

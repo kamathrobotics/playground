@@ -1,5 +1,12 @@
 # Playground
 
+![Project Status](https://img.shields.io/badge/Status-Active-green)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES%20Modules-yellow?style=flat&logo=javascript&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=flat&logo=threedotjs&logoColor=white)
+[![CI](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/Live-playground.kamathrobotics.com-blue?style=flat&logo=cloudflare&logoColor=white)](https://playground.kamathrobotics.com)
+![License](https://img.shields.io/github/license/kamathrobotics/playground?label=License)
+
 Interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
 
 **Live at [playground.kamathrobotics.com](https://playground.kamathrobotics.com)**
@@ -8,10 +15,11 @@ Interactive 3D robot playground in the browser. Load a robot, drive it around wi
 
 | Robot | Type | Drive | Kinematics |
 |-------|------|-------|------------|
-| [LeKiwi](https://github.com/adityakamath/lekiwi_ros2) | Wheeled | 3-wheel omnidirectional | `omni3.js` |
-| [AKROS](https://github.com/adityakamath/akros2) | Wheeled | 4-wheel mecanum | `mecanum.js` |
+| [LeKiwi](https://github.com/adityakamath/lekiwi_ros2) | Mobile + arm | 3-wheel omnidirectional | `omni3.js` |
+| [SO101](https://github.com/adityakamath/so_arm_ros2) | Arm | 6-DOF serial | `5dof_arm.js` |
+| [PT101](https://github.com/adityakamath/pantilt_ros2) | Arm | Pan-tilt (2-DOF) | `pt101.js` |
 | [KR003](https://github.com/adityakamath/kr0003_description) | Wheeled | 4-wheel mecanum | `mecanum.js` |
-| [SO-ARM100](https://github.com/adityakamath/SO-ARM100) | Arm | 6-DOF serial | `arm.js` |
+| [AKROS](https://github.com/adityakamath/akros2) | Wheeled | 4-wheel mecanum | `mecanum.js` |
 
 ## Controls
 
@@ -24,6 +32,7 @@ Interactive 3D robot playground in the browser. Load a robot, drive it around wi
 - URDF models are fetched from their respective GitHub repos at runtime (no local assets needed beyond favicons/logos)
 - Three.js renders the scene with orbit camera controls
 - Kinematics modules compute wheel velocities or joint angles each frame
+- A self-collision checker/resolver prevents arm meshes from interpenetrating
 - Telemetry is shown in the footer bar (pose for wheeled, joint angles for arms)
 - No build step — vanilla HTML/CSS/JS with ES modules
 
@@ -38,19 +47,27 @@ js/
   input.js              ← Keyboard input + profile switching
   input/profiles/
     wheeled.js           ← WASD key bindings for wheeled robots
-    arm.js               ← Slider bindings for arm robots
+    5dof_arm.js           ← Slider bindings for 5-DOF arms
+    pt101.js              ← Slider bindings for the PT101 pan-tilt
+    lekiwi.js             ← Slider + WASD bindings for LeKiwi's arm + base
   kinematics/
-    omni3.js             ← 3-wheel omnidirectional inverse kinematics
-    mecanum.js           ← 4-wheel mecanum inverse kinematics
-    arm.js               ← Direct joint control for serial arms
+    omni3.js              ← 3-wheel omnidirectional inverse kinematics
+    mecanum.js             ← 4-wheel mecanum inverse kinematics
+    5dof_arm.js            ← Direct joint control for 5-DOF serial arms
+    pt101.js               ← Direct joint control for the PT101 pan-tilt
+    lekiwi.js               ← Combined base + arm kinematics for LeKiwi
+  collision/
+    collision.js           ← Self-collision detection + resolution for arms
   robots/
-    registry.js          ← Central robot registry (add new robots here)
-    lekiwi.js            ← LeKiwi config + geometry
-    akros.js             ← AKROS config + geometry
-    kr003.js             ← KR003 config + geometry
-    so100.js             ← SO-ARM100 config
+    registry.js           ← Central robot registry (add new robots here)
+    lekiwi.js               ← LeKiwi config + geometry
+    akros.js                ← AKROS config + geometry
+    kr003.js                 ← KR003 config + geometry
+    so101.js                 ← SO101 config
+    pt101.js                 ← PT101 config
 assets/                  ← Favicons, logos, OG images
 wrangler.jsonc           ← Cloudflare Pages deployment config
+.github/workflows/ci.yml ← HTML/JS lint + link check
 ```
 
 ## Adding a New Robot
@@ -61,6 +78,13 @@ wrangler.jsonc           ← Cloudflare Pages deployment config
 4. Add an `<option>` to `#robotSelect` in `index.html`
 
 See `js/robots/registry.js` for the full specification.
+
+## CI
+
+Every push and pull request runs:
+- **HTML lint** — `htmlhint` against `index.html`
+- **JS syntax check** — `node --check` on every file in `js/`
+- **Link check** — [lychee](https://github.com/lycheeverse/lychee-action) verifies links in `README.md` and `index.html` aren't broken
 
 ## Deployment
 
