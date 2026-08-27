@@ -8,8 +8,6 @@
 
 Interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
 
-**Live at [playground.kamathrobotics.com](https://playground.kamathrobotics.com)**
-
 ## Robots
 
 | Robot | Type | Drive | Kinematics |
