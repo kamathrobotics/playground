@@ -13,7 +13,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 13px;
   color: #F1EFED;
   background: #0a0a0a;
@@ -122,7 +122,7 @@ body {
   cursor: pointer;
   font-size: 11px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   appearance: none;
@@ -168,7 +168,7 @@ body {
   align-items: center;
   font-size: 10px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.8px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
@@ -264,7 +264,7 @@ body {
 .key-letter {
   font-size: 12px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   color: rgba(255, 255, 255, 0.90);
   line-height: 1;
 }
@@ -305,7 +305,7 @@ body {
   flex: 1;
   font-size: 10px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.38);
@@ -318,7 +318,7 @@ body {
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist Mono', monospace;
   font-weight: 400;
   color: #6FA6C4;
   letter-spacing: 0.2px;
@@ -384,7 +384,7 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   font-size: 10px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
@@ -421,11 +421,11 @@ input[type="range"]::-moz-range-thumb {
   color: rgba(255, 255, 255, 0.90);
 }
 
+/* Hard outline, not a soft fill — the one control allowed outside the brand
+   palette, kept narrow: red appears only as a border here, nowhere else. */
 .key.estop-key.active {
-  background: rgba(200, 30, 30, 0.28);
-  border-color: rgba(220, 50, 50, 0.62);
-  box-shadow: 0 0 12px rgba(200, 30, 30, 0.38),
-              inset 0 0 8px rgba(200, 30, 30, 0.10);
+  background: transparent;
+  border: 2px solid #DC3232;
 }
 
 /* Wide variant — full content width below sliders */
@@ -439,7 +439,7 @@ input[type="range"]::-moz-range-thumb {
 .estop-label {
   font-size: 11px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   color: rgba(255, 255, 255, 0.40);
   letter-spacing: 0.5px;
 }
@@ -456,7 +456,7 @@ input[type="range"]::-moz-range-thumb {
   gap: 6px;
   margin-top: 0;
   font-size: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   color: rgba(255, 255, 255, 0.38);
   padding-top: 4px;
   flex-shrink: 0;
@@ -510,7 +510,7 @@ input[type="range"]::-moz-range-thumb {
   /* grid-template-columns and rows are set dynamically by renderTelemetry() */
   column-gap: 4px;
   row-gap: 2px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Geist Mono', monospace;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
