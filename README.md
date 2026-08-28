@@ -1,12 +1,12 @@
-# Playground
+# Dojo
 
 ![Project Status](https://img.shields.io/badge/Status-Active-green)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES%20Modules-yellow?style=flat&logo=javascript&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=flat&logo=threedotjs&logoColor=white)
-[![CI](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/playground/actions/workflows/ci.yml)
-![License](https://img.shields.io/github/license/kamathrobotics/playground?label=License)
+[![CI](https://github.com/kamathrobotics/dojo/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/dojo/actions/workflows/ci.yml)
+![License](https://img.shields.io/github/license/kamathrobotics/dojo?label=License)
 
-Interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
+Dojo is an interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
 
 ## Robots
 

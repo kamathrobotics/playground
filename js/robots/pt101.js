@@ -9,7 +9,7 @@ import { pantiltProfile } from '../input/profiles/pt101.js';
 
 export const config = {
   robotType: 'arm',
-  title:     'PT101 Playground',
+  title:     'PT101 Dojo',
   repoBase:  'https://raw.githubusercontent.com/adityakamath/pantilt_ros2/main/pt_description/urdf/',
   urdfPath:  'pt101.urdf',
   zOffset:   0.0,

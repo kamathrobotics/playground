@@ -9,7 +9,7 @@ import { wheeledProfile } from '../input/profiles/wheeled.js';
 
 export const config = {
   robotType: 'wheeled',
-  title:    'AKROS Playground',
+  title:    'AKROS Dojo',
   repoBase: 'https://raw.githubusercontent.com/adityakamath/akros2/main/akros2_description/urdf/',
   urdfPath: 'robot.urdf',
   zOffset:  0.01539,  // 15.39 mm — AKROS base_link elevated above ground in URDF
