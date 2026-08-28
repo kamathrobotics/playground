@@ -28,6 +28,7 @@ import {
 
 import { ROBOTS } from './robots/registry.js';
 import { SelfCollisionChecker, CollisionResolver } from './collision/collision.js';
+import { initJointDrag } from './interaction/jointDrag.js';
 
 // ── Fade helpers ───────────────────────────────────────────────────────────────
 function fadeRobotOut(target, duration) {
@@ -202,6 +203,11 @@ function loadRobot(key) {
         console.error('Self-collision checker failed to build:', err);
       }
     }
+
+    // Register (or clear) draggable joints for this robot. Passing null for
+    // non-arm types also cancels any leftover registration from a previous
+    // arm robot, so stale mesh references never get raycast against.
+    initJointDrag(config.robotType === 'arm' ? robot : null);
   };
 
   mgr.onError = (url) => {
