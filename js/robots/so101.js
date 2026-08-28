@@ -18,7 +18,7 @@ export const config = {
   kinematics: {},
 
   telemetry: {
-    icon: '∠',
+    icon: '⌖',
     colWidths: ['9ch', '9ch', '9ch'],
     rows: [
       [
