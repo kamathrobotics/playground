@@ -1,8 +1,9 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    Robot Playground — styles
    Glassmorphism HUD aesthetic
-   Accent: cyan (#00b8d9) — constant across all robots
-   Background: #0d1117 (deep charcoal)
+   Accent: steel blue (#6FA6C4) — Kamath Robotics data accent, dark mode
+   Chrome (chevrons, dividers, toggles): ink and grey — never the accent
+   Background: #0a0a0a (brand ink/ground)
 ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Base ── */
@@ -14,8 +15,8 @@ body {
   overflow: hidden;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  color: white;
-  background: #0d1117;
+  color: #F1EFED;
+  background: #0a0a0a;
 }
 
 #canvas-container {
@@ -30,7 +31,7 @@ body {
   left: 12px;
   width: 220px;
   max-height: calc(100vh - 72px);  /* 12px top + 48px footer + 12px gap */
-  background: rgba(13, 17, 23, 0.65);
+  background: rgba(10, 10, 10, 0.65);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -56,16 +57,10 @@ body {
   display: block;
   text-align: center;
   margin: 0 auto 2px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-weight: 700;
-  font-size: 18px;
-  color: #FFFFFF;
-  letter-spacing: 0.02em;
-}
-
-#playground-title .title-bracket {
-  color: rgba(0, 184, 217,0.9);
-  -webkit-text-stroke: 0.5px rgba(255,255,255,0.3);
+  font-size: 20px;
+  color: #F1EFED;
 }
 
 /* ── Robot selector row (dropdown + info button) ── */
@@ -80,7 +75,7 @@ body {
   min-width: 0;
 }
 
-/* ── Info (ⓘ) button ── */
+/* ── GitHub link button ── */
 #controls .info-button {
   flex-shrink: 0;
   width: 26px;
@@ -93,10 +88,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  font-family: 'JetBrains Mono', monospace;
-  line-height: 1;
-  padding: 0;
+  text-decoration: none;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
@@ -104,66 +96,6 @@ body {
   background: rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.90);
   border-color: rgba(255, 255, 255, 0.20);
-}
-
-#controls .info-button.active {
-  background: rgba(0, 120, 160,0.25);
-  border-color: rgba(0, 184, 217,0.50);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* ── Robot info card (floating popover) ── */
-#infoCard {
-  display: none;
-  position: fixed;
-  top: 12px;
-  left: calc(12px + 220px + 12px);  /* panel left + panel width + gap */
-  width: 220px;
-  background: rgba(13, 17, 23, 0.72);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 10px;
-  z-index: 10;
-}
-
-#infoCard.visible {
-  display: block;
-}
-
-.info-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.info-card-title {
-  font-size: 11px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.info-card-close {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.30);
-  cursor: pointer;
-  font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.15s;
-}
-
-.info-card-close:hover {
-  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ── Robot selector dropdown ── */
@@ -175,7 +107,7 @@ body {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(0, 184, 217,0.80);
+  color: rgba(255, 255, 255, 0.40);
   pointer-events: none;
   font-size: 11px;
 }
@@ -200,11 +132,11 @@ body {
 }
 
 #robotSelect:focus {
-  border-color: rgba(0, 184, 217,0.50);
+  border-color: rgba(111, 166, 196, 0.65);
 }
 
 #robotSelect option {
-  background: #0d1117;
+  background: #0a0a0a;
 }
 
 #robotSelect:disabled {
@@ -242,18 +174,18 @@ body {
   color: rgba(255, 255, 255, 0.45);
   user-select: none;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
-  border-left: 2px solid rgba(0, 184, 217,0.40);
+  border-left: 2px solid rgba(255, 255, 255, 0.18);
 }
 
 .collapsible-header:hover {
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.85);
-  border-left-color: rgba(0, 200, 232,0.85);
+  border-left-color: rgba(255, 255, 255, 0.45);
 }
 
 .collapsible-icon {
   font-size: 10px;
-  color: rgba(0, 184, 217,0.60);
+  color: rgba(255, 255, 255, 0.45);
   transition: transform 0.2s ease;
 }
 
@@ -316,16 +248,17 @@ body {
   transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
 }
 
-/* White/grey tint for rotation keys (Q/E) */
-#key-q, #key-e {
+/* White/grey tint for rotation keys (Q/E) — excludes .active so it doesn't
+   outrank .key.active's steel blue glow (ID selectors beat class selectors) */
+#key-q:not(.active), #key-e:not(.active) {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Teal tint for movement keys (W/A/S/D) */
+/* Grey tint for movement keys (W/A/S/D) */
 .key.movement-key {
-  background: rgba(0, 120, 160,0.18);
-  border-color: rgba(0, 184, 217,0.32);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .key-letter {
@@ -342,12 +275,12 @@ body {
   line-height: 1;
 }
 
-/* Active (pressed) state — teal glow */
+/* Active (pressed) state — steel blue glow */
 .key.active {
-  background: rgba(0, 184, 217,0.22);
-  border-color: rgba(0, 200, 232,0.58);
-  box-shadow: 0 0 12px rgba(0, 184, 217,0.38),
-              inset 0 0 8px rgba(0, 184, 217,0.10);
+  background: rgba(111, 166, 196, 0.22);
+  border-color: rgba(111, 166, 196, 0.62);
+  box-shadow: 0 0 12px rgba(111, 166, 196, 0.40),
+              inset 0 0 8px rgba(111, 166, 196, 0.12);
 }
 
 .key.active .key-symbol {
@@ -380,14 +313,14 @@ body {
 
 .slider-value-badge {
   flex-shrink: 0;
-  background: rgba(0, 120, 160,0.18);
-  border: 1px solid rgba(0, 184, 217,0.32);
+  background: rgba(53, 112, 143, 0.18);
+  border: 1px solid rgba(111, 166, 196, 0.38);
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 10px;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.90);
+  color: #6FA6C4;
   letter-spacing: 0.2px;
 }
 
@@ -406,23 +339,23 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
   height: 14px;
-  background: rgba(0, 190, 224,0.95);
+  background: rgba(111, 166, 196, 0.95);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 6px rgba(0, 184, 217,0.50);
+  box-shadow: 0 0 6px rgba(111, 166, 196, 0.50);
   transition: transform 0.1s, background 0.1s, box-shadow 0.1s;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  background: rgba(0, 215, 240,1);
+  background: rgba(169, 200, 218, 1);
   transform: scale(1.2);
-  box-shadow: 0 0 10px rgba(0, 184, 217,0.70);
+  box-shadow: 0 0 10px rgba(111, 166, 196, 0.70);
 }
 
 input[type="range"]::-moz-range-thumb {
   width: 14px;
   height: 14px;
-  background: rgba(0, 190, 224,0.95);
+  background: rgba(111, 166, 196, 0.95);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -463,19 +396,19 @@ input[type="range"]::-moz-range-thumb {
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Reset button — brief teal flash on click */
+/* Reset button — brief steel blue flash on click */
 #resetButton.active,
 #resetButton.active:hover {
-  background: rgba(0, 120, 160,0.25);
-  border-color: rgba(0, 184, 217,0.50);
+  background: rgba(53, 112, 143, 0.25);
+  border-color: rgba(111, 166, 196, 0.55);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 10px rgba(0, 184, 217,0.28);
+  box-shadow: 0 0 10px rgba(111, 166, 196, 0.30);
 }
 
-/* Active toggle state — teal */
+/* Active toggle state — ink and grey (Axes/Grid are chrome, not the data accent) */
 #controls .toggle-button.active {
-  background: rgba(0, 120, 160,0.25);
-  border-color: rgba(0, 184, 217,0.50);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.32);
   color: rgba(255, 255, 255, 0.95);
 }
 
@@ -538,7 +471,7 @@ input[type="range"]::-moz-range-thumb {
   width: 10px;
   height: 10px;
   border: 1.5px solid rgba(255, 255, 255, 0.10);
-  border-top-color: rgba(0, 190, 224,0.90);
+  border-top-color: rgba(111, 166, 196, 0.90);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
@@ -546,55 +479,6 @@ input[type="range"]::-moz-range-thumb {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ── Info card content ── */
-.about-description {
-  font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
-  color: rgba(255, 255, 255, 0.62);
-  line-height: 1.6;
-  margin: 0 0 10px 0;
-}
-
-.about-description a {
-  color: rgba(0, 200, 232,0.90);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-.about-description a:hover {
-  color: rgba(0, 215, 240,1);
-}
-
-.github-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 6px 0;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.github-button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.github-button svg {
-  flex-shrink: 0;
 }
 
 /* ── Footer telemetry ── */
@@ -639,7 +523,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .tv {
-  color: rgba(255, 255, 255, 0.85);
+  color: #6FA6C4;
 }
 
 /* ── Footer bar ── */
@@ -649,7 +533,7 @@ input[type="range"]::-moz-range-thumb {
   left: 0;
   right: 0;
   height: 48px;
-  background: rgba(13, 17, 23, 0.75);
+  background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   border-top: 1px solid rgba(255, 255, 255, 0.07);

@@ -101,10 +101,6 @@ function loadRobot(key) {
   // Update page title to reflect selected robot
   document.title = config.title + ' — Kamath Robotics';
 
-  // Close info card when switching robots
-  document.getElementById('infoCard').classList.remove('visible');
-  document.getElementById('infoButton').classList.remove('active');
-
   // Disable selector while loading to avoid rapid switching
   const sel = document.getElementById('robotSelect');
   sel.disabled = true;
@@ -145,13 +141,9 @@ function loadRobot(key) {
 
   if (!sameType) resetEstop();
 
-  // Update info card with per-robot metadata
-  const aboutDesc  = document.getElementById('aboutDescription');
-  const aboutGh    = document.getElementById('aboutGithub');
-  const cardTitle  = document.getElementById('infoCardTitle');
-  if (aboutDesc) aboutDesc.innerHTML  = entry.config.about.description;
-  if (aboutGh)   aboutGh.href         = entry.config.about.githubUrl;
-  if (cardTitle) cardTitle.textContent = entry.config.title.replace(' Playground', '');
+  // Point the GitHub button at this robot's repo
+  const infoBtn = document.getElementById('infoButton');
+  if (infoBtn) infoBtn.href = entry.config.about.githubUrl;
 
   // ── Loading status ──────────────────────────────────────────────────────────
   const status = document.getElementById('loadingStatus');
@@ -454,33 +446,15 @@ document.getElementById('robotSelect').addEventListener('change', (e) => {
 });
 
 
+document.getElementById('infoButton').addEventListener('click', (e) => {
+  e.preventDefault();
+  window.open(e.currentTarget.href, '_blank', 'noopener,noreferrer');
+});
+
 document.querySelectorAll('.collapsible-header').forEach(header => {
   header.addEventListener('click', () => {
     header.closest('.collapsible').classList.toggle('open');
   });
-});
-
-// ── Info card (robot popover) ───────────────────────────────────────────────
-const infoCard    = document.getElementById('infoCard');
-const infoButton  = document.getElementById('infoButton');
-const infoClose   = document.getElementById('infoCardClose');
-
-infoButton.addEventListener('click', (e) => {
-  e.stopPropagation();
-  const open = infoCard.classList.toggle('visible');
-  infoButton.classList.toggle('active', open);
-});
-
-infoClose.addEventListener('click', () => {
-  infoCard.classList.remove('visible');
-  infoButton.classList.remove('active');
-});
-
-document.addEventListener('click', (e) => {
-  if (!infoCard.contains(e.target) && e.target !== infoButton) {
-    infoCard.classList.remove('visible');
-    infoButton.classList.remove('active');
-  }
 });
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────────
