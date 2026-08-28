@@ -99,7 +99,7 @@ function loadRobot(key) {
   const myGen     = ++loadGen;
 
   // Update page title to reflect selected robot
-  document.title = config.title + ' — Kamath Robotics';
+  document.title = config.title;
 
   // Disable selector while loading to avoid rapid switching
   const sel = document.getElementById('robotSelect');

@@ -52,39 +52,22 @@ body {
 #controls::-webkit-scrollbar-track { background: transparent; }
 #controls::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
 
-/* ── App header (title + subtitle) — matches frameshift.kamathrobotics.com ── */
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 0 auto 2px;
-  flex-wrap: wrap;
-}
-
-.app-header h1 {
+/* ── App title (inline with selector row) ── */
+.app-title {
+  flex-shrink: 0;
   margin: 0;
   font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   color: #F1EFED;
   letter-spacing: 0.2px;
 }
 
-.app-header .subtitle {
-  font-family: 'Geist Mono', monospace;
-  font-size: 10px;
-  font-weight: 400;
-  color: rgba(241, 239, 237, 0.3);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-
-/* ── Robot selector row (dropdown + info button) ── */
+/* ── Title + robot selector row (dropdown + info button) ── */
 .selector-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .selector-row .robot-selector {
