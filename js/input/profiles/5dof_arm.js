@@ -12,7 +12,7 @@
 import { isEstopActive } from '../../input.js';
 
 // Joint configuration: DOM id suffix, URDF joint name, URDF limits, default
-const ARM_JOINTS = [
+export const ARM_JOINTS = [
   { id: 'shoulder_pan',  name: 'shoulder_pan_joint',  min: -1.91986, max: 1.91986,  default: 0.0 },
   { id: 'shoulder_lift', name: 'shoulder_lift_joint', min: -1.74533, max: 1.74533,  default: 0.0 },
   { id: 'elbow_flex',    name: 'elbow_flex_joint',    min: -1.69,    max: 1.69,     default: 0.0 },
