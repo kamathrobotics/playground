@@ -39,13 +39,15 @@ let jointLimits      = new Map(); // joint name -> { min, max }
 
 let currentRobot = null;
 let hoveredJoint  = null;
-let drag          = null; // { jointName, joint, axisWorld, originWorld, startDir, startAngle }
+let drag          = null; // { jointName, joint, axisWorld, originWorld, lastDir, angle }
 
-/** Stop descending as soon as a child URDFJoint is reached — same stopping
- *  condition as collision.js's walkOwnMeshes() (collision.js:99), replicated
- *  here since that helper isn't exported. */
+/** Stop descending as soon as a child REVOLUTE/CONTINUOUS joint is reached —
+ *  fixed child joints (camera mounts, end-effector frames, etc.) are rigidly
+ *  attached extensions of the current link, not independent DOFs, so their
+ *  meshes stay part of the nearest draggable ancestor's grabbable region. */
 function walkOwnMeshes(node, root, callback) {
-  if (node !== root && node.isURDFJoint) return;
+  if (node !== root && node.isURDFJoint &&
+      (node.jointType === 'revolute' || node.jointType === 'continuous')) return;
   if (node.isMesh) callback(node);
   for (const child of node.children) walkOwnMeshes(child, root, callback);
 }
@@ -169,18 +171,47 @@ function onPointerMove(event) {
     const point = planePointFromPointer(drag.axisWorld, drag.originWorld);
     if (!point) return;
     const v = point.sub(drag.originWorld).normalize();
-    const deltaAngle = signedAngleAround(drag.startDir, v, drag.axisWorld);
-    let angle = drag.startAngle + deltaAngle;
+    // Accumulate a small per-frame delta from the previous frame's direction,
+    // rather than a single delta from the drag-start direction — atan2 only
+    // returns angles in (-pi, pi], so a delta measured from a fixed start
+    // wraps (and jumps to the opposite sign) once the total sweep exceeds
+    // pi radians. Consecutive mouse positions are always close together, so
+    // their delta never approaches that wrap boundary.
+    const delta = signedAngleAround(drag.lastDir, v, drag.axisWorld);
+    drag.lastDir = v;
+    drag.angle += delta;
 
     const limits = jointLimits.get(drag.jointName);
-    if (limits) angle = Math.max(limits.min, Math.min(limits.max, angle));
+    // Clamp the persisted angle itself, not just the value applied this
+    // frame — otherwise continuing to drag past a limit "winds up" past it,
+    // and reversing direction wouldn't move the joint again until that
+    // wind-up unwound.
+    if (limits) drag.angle = Math.max(limits.min, Math.min(limits.max, drag.angle));
+    let angle = drag.angle;
 
     const resolver = currentRobot?.userData?.collisionResolver;
     if (resolver) {
-      const currentAngle = drag.joint.angle ?? drag.startAngle;
-      const proposed = { [drag.jointName]: angle };
-      resolver.resolve(proposed, { [drag.jointName]: currentAngle });
+      // Pass every arm joint's real current angle, not just the dragged
+      // one — CollisionResolver's forward kinematics defaults any joint
+      // absent from these maps to 0 rad, which would silently pose the
+      // rest of the arm at zero (not its actual configuration) and miss
+      // collisions against links further down the chain.
+      const current  = {};
+      const proposed = {};
+      for (const j of ARM_JOINTS) {
+        const otherJoint = currentRobot.joints[j.name];
+        const cur = otherJoint?.angle ?? 0;
+        current[j.name]  = cur;
+        proposed[j.name] = j.name === drag.jointName ? angle : cur;
+      }
+      resolver.resolve(proposed, current);
       angle = proposed[drag.jointName];
+      // Sync the persisted angle to what was actually applied — otherwise,
+      // same wind-up problem as the URDF-limit clamp above: continuing to
+      // drag into a collision would keep accumulating drag.angle past the
+      // point the resolver allows, and reversing direction wouldn't move
+      // the joint again until that unwound.
+      drag.angle = angle;
     }
 
     drag.joint.setJointValue(angle);
@@ -215,8 +246,8 @@ function onPointerDown(event) {
     joint,
     axisWorld,
     originWorld,
-    startDir: startPoint.sub(originWorld).normalize(),
-    startAngle: joint.angle ?? 0,
+    lastDir: startPoint.sub(originWorld).normalize(),
+    angle: joint.angle ?? 0,
   };
 
   orbitControls.enabled = false;
