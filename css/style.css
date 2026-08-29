@@ -58,7 +58,7 @@ body {
   margin: 0 0 0 2px; /* nudges the "D" flush with the card's left padding edge */
   font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-weight: 700;
-  font-size: 20px;
+  font-size: 13px;
   color: #F1EFED;
   letter-spacing: 0.2px;
 }
@@ -491,7 +491,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 #logo {
-  height: 32px;
+  height: 36px;
   width: auto;
   opacity: 1;
   transition: filter 0.2s;

@@ -25,7 +25,15 @@ import {
 
 import { ROBOTS } from './robots/registry.js';
 import { SelfCollisionChecker, CollisionResolver } from './collision/collision.js';
-import { initJointDrag } from './interaction/jointDrag.js';
+import { initJointDrag, connectBaseDrag } from './interaction/jointDrag.js';
+import { initBaseDrag, getDragCommand, clearBaseHover, isBaseDragging } from './interaction/baseDrag.js';
+
+// jointDrag.js needs to clear/query baseDrag.js's hover-highlight state, but
+// can't import it directly — see the comment on connectBaseDrag() in
+// jointDrag.js for why that would create a circular import that breaks
+// pointerdown listener registration order. Wiring it here instead, since
+// main.js already imports both modules without a cycle.
+connectBaseDrag({ clearBaseHover, isBaseDragging });
 
 // ── Fade helpers ───────────────────────────────────────────────────────────────
 function fadeRobotOut(target, duration) {
@@ -64,12 +72,47 @@ function fadeRobotIn(target, duration) {
   })();
 }
 
+// ── Camera reset animation ───────────────────────────────────────────────────
+const CAMERA_HOME_POSITION = new THREE.Vector3(0.75, -0.75, 0.35);
+const CAMERA_HOME_TARGET   = new THREE.Vector3(0, 0, 0.06);
+let cameraAnimId = null;
+
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+function animateCameraTo(targetPos, targetTarget, duration) {
+  if (cameraAnimId !== null) cancelAnimationFrame(cameraAnimId);
+  const startPos    = camera.position.clone();
+  const startTarget = orbitControls.target.clone();
+  const start = performance.now();
+  (function step() {
+    const t = Math.min((performance.now() - start) / duration, 1);
+    const e = easeOutCubic(t);
+    camera.position.lerpVectors(startPos, targetPos, e);
+    orbitControls.target.lerpVectors(startTarget, targetTarget, e);
+    orbitControls.update();
+    if (t < 1) {
+      cameraAnimId = requestAnimationFrame(step);
+    } else {
+      cameraAnimId = null;
+    }
+  })();
+}
+
 // ── Runtime state ──────────────────────────────────────────────────────────────
 let robot       = null;   // active URDFRobot
-let originLine  = null;   // line from world origin → robot origin
 let robotPose   = { x: 0, y: 0, theta: 0 };
 let lastTime    = performance.now();
 let loadGen     = 0;      // bumped on every robot switch; stale callbacks check against it
+let robotResetAnim = null; // { start, duration, startX, startY, startTheta, deltaTheta } while driving back to origin
+
+// Shortest signed angular delta from `from` to `to`, wrapped to [-π, π] —
+// avoids the long way around when interpolating heading back to 0.
+function shortestAngleDelta(from, to) {
+  let d = (to - from) % (2 * Math.PI);
+  if (d > Math.PI) d -= 2 * Math.PI;
+  if (d < -Math.PI) d += 2 * Math.PI;
+  return d;
+}
 let activeRobot = null;   // reference to active entry from ROBOTS
 // ── Robot loader ───────────────────────────────────────────────────────────────
 function loadRobot(key) {
@@ -99,10 +142,10 @@ function loadRobot(key) {
   sel.disabled = true;
 
   // ── Tear down previous robot ────────────────────────────────────────────────
-  if (robot)      { fadeRobotOut(robot, 200); robot = null; }
-  if (originLine) { scene.remove(originLine); originLine = null; }
+  if (robot) { fadeRobotOut(robot, 200); robot = null; }
 
-  robotPose = nextPose;
+  robotPose       = nextPose;
+  robotResetAnim  = null;  // switching robots cancels any in-progress drive-home
 
   // Reset input state and configure sliders for this robot's profile
   applyProfile(entry.inputProfile);
@@ -192,6 +235,10 @@ function loadRobot(key) {
     // so this works for any robot config without robotType gating. Wheel
     // joints have no slider and aren't yet draggable — see README.
     initJointDrag(robot);
+
+    // Register base-drag (click-drag the body to drive) for wheeled/
+    // mobile-arm robots. No-op for arm-type robots.
+    initBaseDrag(robot, config);
   };
 
   mgr.onError = (url) => {
@@ -213,18 +260,6 @@ function loadRobot(key) {
 
       robot = urdfRobot;
       robot.traverse(c => { if (c.isMesh) c.castShadow = c.receiveShadow = true; });
-
-      // Origin trail line — only for mobile robots that translate in the world
-      if (config.robotType === 'wheeled') {
-        originLine = new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(0, 0, 0),
-            new THREE.Vector3(robotPose.x, robotPose.y, 0),
-          ]),
-          new THREE.LineBasicMaterial({ color: 0x00b8d9 })
-        );
-        scene.add(originLine);
-      }
 
       robot.position.set(robotPose.x, robotPose.y, config.zOffset);
       robot.rotation.z = robotPose.theta;
@@ -253,19 +288,83 @@ function animate() {
 
   if (robot) {
     const commands = getCommands(activeRobot.inputProfile);
-    const { velX, velY, velAngular } = commands;
+    let { velX, velY, velAngular } = commands;
 
     const now = performance.now();
     const dt  = Math.min((now - lastTime) / 1000, 0.1);
     lastTime  = now;
 
-    if (activeRobot.config.robotType === 'arm') {
+    const robotType = activeRobot.config.robotType;
+
+    // Base-drag applies only to wheeled/mobile-arm robots — add its
+    // contribution to the keyboard-derived command, then clamp the result
+    // to the *currently configured* MAX LINEAR / MAX ANGULAR slider values
+    // (not the slider's range ceiling) so drag + keys together never exceed
+    // the same speed limit keyboard driving alone already respects.
+    if (robotType === 'wheeled' || robotType === 'mobile-arm') {
+      const linearMax  = parseFloat(document.getElementById('linearVelocitySlider').value);
+      const angularMax = parseFloat(document.getElementById('angularVelocitySlider').value);
+      const drag = getDragCommand(robotPose.theta, linearMax, angularMax);
+      velX       += drag.velX;
+      velY       += drag.velY;
+      velAngular += drag.velAngular;
+
+      const speed = Math.hypot(velX, velY);
+      if (speed > linearMax) {
+        const scale = linearMax / speed;
+        velX *= scale;
+        velY *= scale;
+      }
+      velAngular = Math.max(-angularMax, Math.min(angularMax, velAngular));
+    }
+
+    const mergedCommands = { ...commands, velX, velY, velAngular };
+
+    if (robotResetAnim) {
+      // Driving back to origin after a reset — interpolate the base pose
+      // instead of processing normal drive commands this frame. Not subject
+      // to the MAX LINEAR / MAX ANGULAR slider caps — those only govern
+      // manual driving.
+      const t = Math.min((now - robotResetAnim.start) / robotResetAnim.duration, 1);
+      const e = easeOutCubic(t);
+
+      const prevX     = robotPose.x;
+      const prevY     = robotPose.y;
+      const prevTheta = robotPose.theta;
+
+      robotPose.x     = robotResetAnim.startX     * (1 - e);
+      robotPose.y     = robotResetAnim.startY     * (1 - e);
+      robotPose.theta = robotResetAnim.startTheta + robotResetAnim.deltaTheta * e;
+      robot.position.set(robotPose.x, robotPose.y, activeRobot.config.zOffset);
+      robot.rotation.z = robotPose.theta;
+
+      // Derive this frame's body-frame velocity from the pose delta so the
+      // wheels spin in the correct direction/speed while driving home (and,
+      // for mobile-arm, the pan/tilt joints keep lerping toward their
+      // already-reset slider targets via the preserved jointTargets field).
+      if (dt > 0) {
+        const dx    = robotPose.x     - prevX;
+        const dy    = robotPose.y     - prevY;
+        const cosT  = Math.cos(prevTheta);
+        const sinT  = Math.sin(prevTheta);
+        const driveCommands = {
+          ...commands,
+          velX:       (dx * cosT + dy * sinT) / dt,
+          velY:       (-dx * sinT + dy * cosT) / dt,
+          velAngular: (robotPose.theta - prevTheta) / dt,
+        };
+        activeRobot.updateJoints(robot, driveCommands, dt, activeRobot.config.kinematics);
+      }
+
+      if (t >= 1) robotResetAnim = null;
+
+    } else if (robotType === 'arm') {
       // Arm: lerp joints toward slider targets every frame (no pose integration)
       activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
 
-    } else if (activeRobot.config.robotType === 'mobile-arm') {
+    } else if (robotType === 'mobile-arm') {
       // Mobile arm: joint lerp (pan-tilt) + wheeled pose integration, always running
-      activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
+      activeRobot.updateJoints(robot, mergedCommands, dt, activeRobot.config.kinematics);
 
       if (velX !== 0 || velY !== 0 || velAngular !== 0) {
         const cosT = Math.cos(robotPose.theta);
@@ -280,7 +379,7 @@ function animate() {
 
     } else if (velX !== 0 || velY !== 0 || velAngular !== 0) {
       // Wheeled: drive-type IK + integrate body pose in world frame
-      activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
+      activeRobot.updateJoints(robot, mergedCommands, dt, activeRobot.config.kinematics);
 
       const cosT = Math.cos(robotPose.theta);
       const sinT = Math.sin(robotPose.theta);
@@ -290,13 +389,6 @@ function animate() {
 
       robot.position.set(robotPose.x, robotPose.y, activeRobot.config.zOffset);
       robot.rotation.z = robotPose.theta;
-
-      if (originLine) {
-        const p = originLine.geometry.attributes.position.array;
-        p[0] = 0;           p[1] = 0;           p[2] = 0;
-        p[3] = robotPose.x; p[4] = robotPose.y; p[5] = 0;
-        originLine.geometry.attributes.position.needsUpdate = true;
-      }
     }
   } else {
     lastTime = performance.now();
@@ -315,24 +407,30 @@ function resetView() {
   const resetBtn = document.getElementById('resetButton');
   resetBtn.classList.add('active');
 
-  // Reset camera to default position
-  camera.position.set(0.75, -0.75, 0.35);
-  orbitControls.target.set(0, 0, 0.06);
-  orbitControls.update();
+  // Smoothly animate camera back to its default position/target
+  animateCameraTo(CAMERA_HOME_POSITION, CAMERA_HOME_TARGET, 500);
 
-  // Return robot to world origin
-  robotPose = { x: 0, y: 0, theta: 0 };
+  // Return robot to world origin — smoothly drive back if it has a base
+  // pose (wheeled / mobile-arm); pure arm robots (so101, pt101) have no
+  // x/y/theta to animate, so snap those instantly as before.
   if (robot && activeRobot) {
-    robot.position.set(0, 0, activeRobot.config.zOffset);
-    robot.rotation.z = 0;
-  }
-
-  // Collapse the origin trail line back to a zero-length point
-  if (originLine) {
-    const p = originLine.geometry.attributes.position.array;
-    p[0] = 0; p[1] = 0; p[2] = 0;
-    p[3] = 0; p[4] = 0; p[5] = 0;
-    originLine.geometry.attributes.position.needsUpdate = true;
+    const robotType = activeRobot.config.robotType;
+    if (robotType === 'wheeled' || robotType === 'mobile-arm') {
+      robotResetAnim = {
+        start:      performance.now(),
+        duration:   500,
+        startX:     robotPose.x,
+        startY:     robotPose.y,
+        startTheta: robotPose.theta,
+        deltaTheta: shortestAngleDelta(robotPose.theta, 0),
+      };
+    } else {
+      robotPose = { x: 0, y: 0, theta: 0 };
+      robot.position.set(0, 0, activeRobot.config.zOffset);
+      robot.rotation.z = 0;
+    }
+  } else {
+    robotPose = { x: 0, y: 0, theta: 0 };
   }
 
   // Reset input sliders to current profile defaults + clear key state

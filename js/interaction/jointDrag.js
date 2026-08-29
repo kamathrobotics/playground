@@ -36,8 +36,31 @@
 import { camera, renderer, orbitControls } from '../scene.js';
 import { isEstopActive } from '../input.js';
 
-const HOVER_EMISSIVE = new THREE.Color(0x1c2b31);  // dim steel blue — hover
-const DRAG_EMISSIVE  = new THREE.Color(0x6fa6c4);  // brand steel-blue accent — active drag
+// Injected by main.js (see connectBaseDrag below) rather than imported
+// directly from baseDrag.js — a static import in that direction would make
+// this module and baseDrag.js circularly dependent, which reverses which of
+// the two's `addEventListener('pointerdown', ...)` calls actually runs
+// first (whichever module's evaluation completes first wins the race), and
+// this module MUST register first: it has "first refusal" on every
+// pointerdown, letting a click on a draggable joint claim the event via
+// stopImmediatePropagation() before baseDrag.js ever sees it. Wiring this
+// through main.js — which already imports both modules non-circularly —
+// keeps that registration order intact.
+let clearBaseHover  = () => {};
+let isBaseDragging  = () => false;
+
+/** Called once from main.js after both drag modules are loaded, so this
+ *  module can clear/query baseDrag.js's state without importing it. */
+export function connectBaseDrag(hooks) {
+  clearBaseHover = hooks.clearBaseHover;
+  isBaseDragging = hooks.isBaseDragging;
+}
+
+// Subtle steel-blue accents, shared with baseDrag.js for a consistent
+// "this is interactive" (hover) / "this is being dragged" (drag) visual
+// language across joints and the base.
+export const HOVER_EMISSIVE = new THREE.Color(0x0c1417);
+export const DRAG_EMISSIVE  = new THREE.Color(0x1d2f36);
 
 const raycaster  = new THREE.Raycaster();
 const pointerNDC = new THREE.Vector2();
@@ -263,6 +286,16 @@ function onPointerMove(event) {
     return;
   }
 
+  // Another module (baseDrag.js) has a drag in progress — while dragging,
+  // only the thing actually being dragged may be highlighted, no matter
+  // what the cursor passes over. This module's own drag is handled by the
+  // early return above; this covers the other module's.
+  if (isBaseDragging()) {
+    if (hoveredJoint) clearHighlight(hoveredJoint);
+    hoveredJoint = null;
+    return;
+  }
+
   const jointName = raycastJoint();
   if (jointName === hoveredJoint) return;
   if (hoveredJoint) clearHighlight(hoveredJoint);
@@ -301,10 +334,35 @@ function onPointerDown(event) {
     angle: joint.angle ?? 0,
   };
 
+  // Concurrent hover highlights (e.g. base + this joint) are fine, but once
+  // a drag actually starts, anything else's leftover hover highlight must
+  // clear — otherwise it can stay lit indefinitely (nothing else will ever
+  // fire a pointermove over it to notice the cursor left).
+  clearBaseHover();
+
   orbitControls.enabled = false;
   setHighlight(jointName, DRAG_EMISSIVE);
   renderer.domElement.style.cursor = 'grabbing';
   event.preventDefault();
+  // Claim this event so baseDrag.js (registered after this module, on the
+  // same element) never sees it — a click on a draggable joint should only
+  // ever start a joint drag, never a base drag.
+  event.stopImmediatePropagation();
+}
+
+/** Clear whatever joint is currently hover-highlighted — called by
+ *  baseDrag.js when a base drag starts, so a leftover joint hover highlight
+ *  doesn't stay lit once the pointer's actually busy dragging the base. */
+export function clearHoveredJoint() {
+  if (!hoveredJoint) return;
+  clearHighlight(hoveredJoint);
+  hoveredJoint = null;
+}
+
+/** Is a joint drag currently in progress? Queried by baseDrag.js so it can
+ *  suppress its own hover highlight while a joint drag has the pointer. */
+export function isJointDragging() {
+  return !!drag;
 }
 
 function endDrag() {

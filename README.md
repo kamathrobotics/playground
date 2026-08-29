@@ -20,15 +20,15 @@ Sandbox is an interactive 3D robot playground in the browser. Load a robot, driv
 
 ## Controls
 
-**Wheeled robots** — WASD for translation, Q/E for rotation, X for e-stop. Velocity limits adjustable via sliders.
+**Wheeled robots** — WASD for translation, Q/E for rotation, X for e-stop. Velocity limits adjustable via sliders. The robot's body can also be driven by clicking and dragging directly on it in the 3D view, like a virtual joystick — drag distance maps to speed, and drag direction (projected onto the ground plane relative to the current camera view) maps to travel direction. Hold **Shift** while dragging to switch to yaw instead of translation — horizontal drag then controls rotation speed.
 
 **Arm robots** — per-joint sliders for shoulder pan, shoulder lift, elbow flex, wrist flex, wrist roll, and gripper. Arm and pan-tilt joints can also be posed directly by clicking and dragging their mesh in the 3D view.
 
-**Reset view** — click the reset button next to E-STOP, or press `H`, to return the camera and active robot to their starting pose. `H` is a keyboard-only shortcut and isn't shown anywhere in the UI.
+**Reset view** — click the reset button next to E-STOP, or press `H`, to smoothly animate the camera and active robot back to their starting pose (wheeled/mobile-base robots drive back with their wheels turning correctly, rather than teleporting). `H` is a keyboard-only shortcut and isn't shown anywhere in the UI.
 
 ## Roadmap / Known Limitations
 
-- **Wheel joints aren't drag-posable yet.** Clicking and dragging a wheel to drive the robot via its wheeled kinematics (mecanum/omni) is planned but not implemented — wheel joints currently have no UI slider and are excluded from drag interaction.
+- **Individual wheel joints still aren't drag-posable.** Whole-body drag-to-drive is implemented (see Controls above), but you can't grab a single wheel mesh directly — wheel joints have no UI slider and are excluded from `jointDrag.js`'s per-joint drag interaction.
 
 ## How It Works
 
@@ -36,7 +36,6 @@ Sandbox is an interactive 3D robot playground in the browser. Load a robot, driv
 - Three.js renders the scene with orbit camera controls
 - Kinematics modules compute wheel velocities or joint angles each frame
 - A self-collision checker/resolver prevents arm meshes from interpenetrating
-- Telemetry is shown in the footer bar (pose for wheeled, joint angles for arms)
 - No build step — vanilla HTML/CSS/JS with ES modules
 
 ## Project Structure
@@ -61,6 +60,9 @@ js/
     lekiwi.js               ← Combined base + arm kinematics for LeKiwi
   collision/
     collision.js           ← Self-collision detection + resolution for arms
+  interaction/
+    jointDrag.js            ← Click-and-drag joint posing for arms/pan-tilt
+    baseDrag.js              ← Click-and-drag whole-body drive for wheeled robots
   robots/
     registry.js           ← Central robot registry (add new robots here)
     lekiwi.js               ← LeKiwi config + geometry
