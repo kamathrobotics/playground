@@ -162,16 +162,12 @@ export class SelfCollisionChecker {
    * @param {object} robot  loaded URDFRobot (from urdf-loader), meshes already attached
    * @param {number} collisionMargin     broad-phase proximity gate (m)
    * @param {number} intersectionMargin  minimum approximate penetration beyond a pair's
-   *   own rest-pose baseline to count as a real collision (m). This point-vs-cell proxy's
-   *   noise floor (an adjacent pair's own relative pose can read as fluctuating by up to
-   *   ~0.001m purely from point/grid-cell quantization as FK moves the *rest* of the arm,
-   *   even when that pair's own relative transform hasn't changed) sits close to SO101's
-   *   real, verified fold penetration (elbow_flex's upper/lower arm links, colliding from
-   *   ~0.0012m above baseline through at least ~0.005m at full fold) — empirically swept
-   *   across every joint to confirm 0.002 clears the noise floor with margin on both sides
-   *   while still catching every real collision found.
+   *   own rest-pose baseline to count as a real collision (m). Kept slightly above zero
+   *   by default to absorb floating-point noise from the chained FK matrix multiplies —
+   *   this proxy has nowhere near the numerical stability of the mesh-based FCL
+   *   penetration depth this design is ported from.
    */
-  constructor(robot, { collisionMargin = 0.01, intersectionMargin = 0.002 } = {}) {
+  constructor(robot, { collisionMargin = 0.01, intersectionMargin = 0.0005 } = {}) {
     this._collisionMargin = collisionMargin;
     this._intersectionMargin = intersectionMargin;
 
