@@ -91,10 +91,6 @@ Every push and pull request runs:
 - **JS syntax check** — `node --check` on every file in `js/`
 - **Link check** — [lychee](https://github.com/lycheeverse/lychee-action) verifies links in `README.md` and `index.html` aren't broken
 
-## Deployment
-
-Deployed on [Cloudflare Pages](https://pages.cloudflare.com/) — static files served directly, no build step.
-
 ## License
 
 Apache-2.0 — see [LICENSE](LICENSE).
