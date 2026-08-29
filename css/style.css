@@ -30,7 +30,7 @@ body {
   top: 12px;
   left: 12px;
   width: 220px;
-  max-height: calc(100vh - 72px);  /* 12px top + 48px footer + 12px gap */
+  max-height: calc(100vh - 24px);  /* 12px top + 12px bottom gap (no footer bar anymore) */
   background: rgba(10, 10, 10, 0.65);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
@@ -55,10 +55,10 @@ body {
 /* ── App title (inline with selector row) ── */
 .app-title {
   flex-shrink: 0;
-  margin: 0;
+  margin: 0 0 0 2px; /* nudges the "D" flush with the card's left padding edge */
   font-family: 'Rajdhani', 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   color: #F1EFED;
   letter-spacing: 0.2px;
 }
@@ -75,11 +75,12 @@ body {
   min-width: 0;
 }
 
-/* ── GitHub link button ── */
+/* ── Small icon buttons (home / GitHub link) in the title row ── */
 #controls .info-button {
   flex-shrink: 0;
   width: 26px;
   height: 26px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,6 +90,8 @@ body {
   border-radius: 6px;
   cursor: pointer;
   text-decoration: none;
+  font-size: 15px;
+  line-height: 1;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
@@ -361,19 +364,6 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
-/* ── View section buttons (Axes / Grid / Reset) ── */
-.view-buttons {
-  display: flex;
-  gap: 5px;
-}
-
-.view-buttons button {
-  flex: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-size: 10px;
-}
-
 /* ── Generic button base ── */
 #controls button {
   padding: 6px 0;
@@ -428,11 +418,19 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid #DC3232;
 }
 
-/* Wide variant — full content width below sliders */
+/* Wide variant — shares .bottom-controls-row with the reset button, whose
+   height (26px) comes from #controls .info-button. */
 .key.estop-wide {
-  width: 100%;
-  height: 32px;
+  flex: 1;
+  min-width: 0;
+  height: 26px;
   flex-direction: row;
+  gap: 8px;
+}
+
+/* ── E-Stop + reset-view row ── */
+.bottom-controls-row {
+  display: flex;
   gap: 8px;
 }
 
@@ -481,33 +479,19 @@ input[type="range"]::-moz-range-thumb {
   to { transform: rotate(360deg); }
 }
 
-/* ── Footer bar ── */
-#footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background: rgba(10, 10, 10, 0.75);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  padding-right: 0;
-  justify-content: flex-end;
-  z-index: 10;
-}
-
+/* ── Floating logo (bottom-right, no background) ── */
 #footer-logo-link {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
   display: flex;
   align-items: center;
   text-decoration: none;
+  z-index: 10;
 }
 
 #logo {
-  height: 38px;
+  height: 32px;
   width: auto;
   opacity: 1;
   transition: filter 0.2s;

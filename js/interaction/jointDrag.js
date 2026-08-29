@@ -1,21 +1,33 @@
 /**
- * interaction/jointDrag.js — Mouse-driven joint selection and drag for arm robots
+ * interaction/jointDrag.js — Mouse-driven joint selection and drag for arm/pan-tilt joints
  *
  * Raycast-pick a URDF joint's link mesh, then drag the mouse to rotate that
- * joint about its own axis. The drag direction is computed by projecting the
- * mouse onto a plane through the joint's world origin, normal to the joint's
- * world axis — this stays correct regardless of camera orientation, unlike a
- * plain screen-space delta (it only degrades when the axis points straight
- * at the camera — an accepted edge case, not handled specially).
+ * joint about its own axis. Each frame, the mouse ray is intersected with a
+ * 3D plane normal to the joint's world axis, anchored at the *clicked
+ * point's own height along that axis* (not the joint's origin — see
+ * radialDirection() for why), and the joint is rotated by exactly the angle
+ * needed to carry the previous frame's plane point to this frame's plane
+ * point, ignoring any component of that motion along the axis itself. The
+ * literal grabbed point in 3D tracks the mouse.
  *
- * Only revolute/continuous joints are draggable.
+ * A joint is only draggable if it has a matching UI slider
+ * (data-joint-name="<jointName>" in index.html), which scopes this to arm
+ * and pan-tilt joints without hardcoding any robot or joint name here.
+ * Wheel joints have no slider and aren't yet draggable — dragging a wheel
+ * to drive the robot via its kinematics is a planned future feature (see
+ * README's Roadmap / Known Limitations), not implemented yet.
+ *
+ * Only revolute/continuous joints are draggable. Nothing here assumes a
+ * particular robot shape — draggable joints, their limits, and the set of
+ * joints fed to the collision resolver are all derived from the loaded
+ * robot's own URDF joints, not from any one robot's input profile.
  *
  * On every drag move, the resolved angle is applied two places:
  *   1. joint.setJointValue() — instant, bypasses the kinematics lerp.
- *   2. The matching armSlider_<id> DOM element (value + badge) — so
- *      armProfile.processInput() (input/profiles/5dof_arm.js) picks it up as
- *      the next frame's jointTarget, making 5dof_arm.js's updateJoints() lerp
- *      a no-op (current ≈ target). This is what prevents snap-back on release.
+ *   2. The DOM slider tagged data-joint-name="<jointName>" (value + badge)
+ *      — so that profile's processInput() picks it up as the next frame's
+ *      jointTarget, making its updateJoints() lerp a no-op (current ≈
+ *      target). This is what prevents snap-back on release.
  *
  * THREE is a global injected by the classic <script> tag in index.html (see
  * main.js).
@@ -23,7 +35,6 @@
 
 import { camera, renderer, orbitControls } from '../scene.js';
 import { isEstopActive } from '../input.js';
-import { ARM_JOINTS } from '../input/profiles/5dof_arm.js';
 
 const HOVER_EMISSIVE = new THREE.Color(0x1c2b31);  // dim steel blue — hover
 const DRAG_EMISSIVE  = new THREE.Color(0x6fa6c4);  // brand steel-blue accent — active drag
@@ -34,12 +45,11 @@ const pointerNDC = new THREE.Vector2();
 let jointByObject   = new Map();  // Object3D (URDFJoint) -> joint name
 let meshesByJoint    = new Map(); // joint name -> THREE.Mesh[] (that joint's own link meshes)
 let originalEmissive = new Map(); // THREE.Mesh -> THREE.Color (cached, for restore)
-let idByJointName    = new Map(); // joint name -> ARM_JOINTS[i].id (slider DOM suffix)
-let jointLimits      = new Map(); // joint name -> { min, max }
+let jointLimits      = new Map(); // joint name -> { min, max } | null (no/non-finite URDF limit)
 
 let currentRobot = null;
 let hoveredJoint  = null;
-let drag          = null; // { jointName, joint, axisWorld, originWorld, lastDir, angle }
+let drag          = null; // { jointName, joint, axisWorld, originWorld, planeAnchor, lastDir, angle }
 
 /** Stop descending as soon as a child REVOLUTE/CONTINUOUS joint is reached —
  *  fixed child joints (camera mounts, end-effector frames, etc.) are rigidly
@@ -54,8 +64,8 @@ function walkOwnMeshes(node, root, callback) {
 
 /**
  * (Re)register the draggable joints for a newly loaded robot. Pass null to
- * clear registration (e.g. when switching to a non-arm robot type) — this
- * also cancels any in-progress drag and restores orbit control.
+ * clear registration (e.g. while a robot is unloaded) — this also cancels
+ * any in-progress drag and restores orbit control.
  */
 export function initJointDrag(robot) {
   if (hoveredJoint) clearHighlight(hoveredJoint);
@@ -65,7 +75,6 @@ export function initJointDrag(robot) {
   jointByObject.clear();
   meshesByJoint.clear();
   originalEmissive.clear();
-  idByJointName.clear();
   jointLimits.clear();
   hoveredJoint = null;
   orbitControls.enabled = true;
@@ -73,14 +82,21 @@ export function initJointDrag(robot) {
 
   if (!robot) return;
 
-  for (const j of ARM_JOINTS) {
-    idByJointName.set(j.name, j.id);
-    jointLimits.set(j.name, { min: j.min, max: j.max });
-  }
-
   for (const [name, joint] of Object.entries(robot.joints)) {
     if (joint.jointType !== 'revolute' && joint.jointType !== 'continuous') continue;
+    // Only joints with a UI slider are draggable — this excludes wheel
+    // joints (drive-by-drag is a planned future feature, not yet wired to
+    // the wheeled kinematics modules) without hardcoding any joint name.
+    if (!document.querySelector(`[data-joint-name="${name}"]`)) continue;
     jointByObject.set(joint, name);
+
+    // Continuous joints have no meaningful limit; revolute joints without a
+    // finite limit in the URDF are treated the same way.
+    const limit = joint.limit;
+    jointLimits.set(name,
+      limit && Number.isFinite(limit.lower) && Number.isFinite(limit.upper)
+        ? { min: limit.lower, max: limit.upper }
+        : null);
 
     const meshes = [];
     walkOwnMeshes(joint, joint, (mesh) => meshes.push(mesh));
@@ -127,13 +143,22 @@ function updatePointerNDC(event) {
   pointerNDC.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 }
 
-function raycastJoint() {
+/** Raycast against all draggable meshes. Returns { jointName, point } for the
+ *  closest hit, or null. `point` is the literal 3D point on the mesh surface
+ *  where the ray hit — not derived from any plane/origin assumption. */
+function raycastMesh() {
   raycaster.setFromCamera(pointerNDC, camera);
   const allMeshes = [];
   for (const meshes of meshesByJoint.values()) allMeshes.push(...meshes);
   const hits = raycaster.intersectObjects(allMeshes, false);
   if (!hits.length) return null;
-  return findJointName(hits[0].object);
+  const jointName = findJointName(hits[0].object);
+  if (!jointName) return null;
+  return { jointName, point: hits[0].point };
+}
+
+function raycastJoint() {
+  return raycastMesh()?.jointName ?? null;
 }
 
 /** Signed angle (radians) from unit vector u to unit vector v, as measured
@@ -145,32 +170,49 @@ function signedAngleAround(u, v, axis) {
   return Math.atan2(sin, cos);
 }
 
-/** Raycast the current pointer onto a plane through `originWorld`, normal to
+/** Raycast the current pointer onto a plane through `planeAnchor`, normal to
  *  `axisWorld`. Returns the intersection point, or null if the ray is
  *  parallel to the plane (camera looking straight down the axis). */
-function planePointFromPointer(axisWorld, originWorld) {
+function planePointFromPointer(axisWorld, planeAnchor) {
   raycaster.setFromCamera(pointerNDC, camera);
-  const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axisWorld, originWorld);
+  const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(axisWorld, planeAnchor);
   const point = new THREE.Vector3();
   return raycaster.ray.intersectPlane(plane, point) ? point : null;
 }
 
+/** Direction from `originWorld` to `point`, around `axisWorld` only — the
+ *  component of (point - originWorld) *along* the axis is discarded before
+ *  normalizing. Without this, a joint whose clickable mesh sits far from its
+ *  own rotation origin along the axis (common when a joint's origin isn't
+ *  centered in its own link's geometry) forces the drag plane to sit far
+ *  from the actual click point, so the ray has to be extrapolated a long
+ *  way to reach it — and that extrapolation's direction is highly sensitive
+ *  to which side of the mesh the camera is viewing from, flipping the felt
+ *  drag direction between viewing angles. Stripping the axial component
+ *  keeps the result a pure rotational direction regardless of where the
+ *  origin sits relative to the mesh. */
+function radialDirection(point, originWorld, axisWorld) {
+  const rel = point.clone().sub(originWorld);
+  const axial = axisWorld.clone().multiplyScalar(rel.dot(axisWorld));
+  return rel.sub(axial).normalize();
+}
+
 function applyToSlider(jointName, angle) {
-  const suffix = idByJointName.get(jointName);
-  if (!suffix) return;
-  const slider = document.getElementById('armSlider_' + suffix);
-  const badge  = document.getElementById('armSliderValue_' + suffix);
-  if (slider) slider.value = angle;
-  if (badge)  badge.textContent = angle.toFixed(2);
+  const slider = document.querySelector(`[data-joint-name="${jointName}"]`);
+  if (!slider) return;
+  slider.value = angle;
+  // Naming convention (index.html): "<prefix>Slider_<id>" -> "<prefix>SliderValue_<id>".
+  const badge = document.getElementById(slider.id.replace('Slider_', 'SliderValue_'));
+  if (badge) badge.textContent = angle.toFixed(2);
 }
 
 function onPointerMove(event) {
   updatePointerNDC(event);
 
   if (drag) {
-    const point = planePointFromPointer(drag.axisWorld, drag.originWorld);
+    const point = planePointFromPointer(drag.axisWorld, drag.planeAnchor);
     if (!point) return;
-    const v = point.sub(drag.originWorld).normalize();
+    const v = radialDirection(point, drag.originWorld, drag.axisWorld);
     // Accumulate a small per-frame delta from the previous frame's direction,
     // rather than a single delta from the drag-start direction — atan2 only
     // returns angles in (-pi, pi], so a delta measured from a fixed start
@@ -191,18 +233,20 @@ function onPointerMove(event) {
 
     const resolver = currentRobot?.userData?.collisionResolver;
     if (resolver) {
-      // Pass every arm joint's real current angle, not just the dragged
-      // one — CollisionResolver's forward kinematics defaults any joint
-      // absent from these maps to 0 rad, which would silently pose the
-      // rest of the arm at zero (not its actual configuration) and miss
-      // collisions against links further down the chain.
+      // Pass every revolute/continuous joint's real current angle, not just
+      // the dragged one — CollisionResolver's forward kinematics defaults
+      // any joint absent from these maps to 0 rad, which would silently
+      // pose the rest of the robot at zero (not its actual configuration)
+      // and miss collisions against links further down the chain. Derived
+      // from the robot's own joints so this works for any robot shape, not
+      // just one hardcoded joint list.
       const current  = {};
       const proposed = {};
-      for (const j of ARM_JOINTS) {
-        const otherJoint = currentRobot.joints[j.name];
-        const cur = otherJoint?.angle ?? 0;
-        current[j.name]  = cur;
-        proposed[j.name] = j.name === drag.jointName ? angle : cur;
+      for (const [name, otherJoint] of Object.entries(currentRobot.joints)) {
+        if (otherJoint.jointType !== 'revolute' && otherJoint.jointType !== 'continuous') continue;
+        const cur = otherJoint.angle ?? 0;
+        current[name]  = cur;
+        proposed[name] = name === drag.jointName ? angle : cur;
       }
       resolver.resolve(proposed, current);
       angle = proposed[drag.jointName];
@@ -230,15 +274,21 @@ function onPointerMove(event) {
 function onPointerDown(event) {
   if (isEstopActive() || !currentRobot) return;
   updatePointerNDC(event);
-  const jointName = raycastJoint();
-  if (!jointName) return;
+  const hit = raycastMesh();
+  if (!hit) return;
+  const { jointName } = hit;
 
   const joint = currentRobot.joints[jointName];
   const axisLocal   = joint.axis ?? new THREE.Vector3(1, 0, 0);
   const axisWorld   = axisLocal.clone().transformDirection(joint.matrixWorld).normalize();
   const originWorld = new THREE.Vector3().setFromMatrixPosition(joint.matrixWorld);
 
-  const startPoint = planePointFromPointer(axisWorld, originWorld);
+  // Anchor the drag plane at the clicked point's own height along the axis,
+  // not at the joint's origin — see radialDirection() for why this matters.
+  const clickAxial  = axisWorld.dot(hit.point.clone().sub(originWorld));
+  const planeAnchor = originWorld.clone().addScaledVector(axisWorld, clickAxial);
+
+  const startPoint = planePointFromPointer(axisWorld, planeAnchor);
   if (!startPoint) return;
 
   drag = {
@@ -246,7 +296,8 @@ function onPointerDown(event) {
     joint,
     axisWorld,
     originWorld,
-    lastDir: startPoint.sub(originWorld).normalize(),
+    planeAnchor,
+    lastDir: radialDirection(startPoint, originWorld, axisWorld),
     angle: joint.angle ?? 0,
   };
 

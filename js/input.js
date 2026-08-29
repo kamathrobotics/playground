@@ -22,6 +22,9 @@ document.addEventListener('keydown', (e) => {
 
   // X is reserved for E-stop toggle — not tracked as a movement key
   if (key === 'x') { e.preventDefault(); toggleEstop(); return; }
+  // H is reserved for the reset-view shortcut (handled in main.js) — not
+  // tracked as a movement key
+  if (key === 'h') { e.preventDefault(); return; }
 
   if (estopActive) return;
   if (!keysDown[key]) {

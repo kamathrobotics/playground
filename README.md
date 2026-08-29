@@ -1,12 +1,12 @@
-# Dojo
+# Sandbox
 
 ![Project Status](https://img.shields.io/badge/Status-Active-green)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES%20Modules-yellow?style=flat&logo=javascript&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=flat&logo=threedotjs&logoColor=white)
-[![CI](https://github.com/kamathrobotics/dojo/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/dojo/actions/workflows/ci.yml)
-![License](https://img.shields.io/github/license/kamathrobotics/dojo?label=License)
+[![CI](https://github.com/kamathrobotics/sandbox/actions/workflows/ci.yml/badge.svg)](https://github.com/kamathrobotics/sandbox/actions/workflows/ci.yml)
+![License](https://img.shields.io/github/license/kamathrobotics/sandbox?label=License)
 
-Dojo is an interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
+Sandbox is an interactive 3D robot playground in the browser. Load a robot, drive it around with keyboard controls, or pose a robotic arm with joint sliders — all running client-side with Three.js and URDF models loaded straight from GitHub.
 
 ## Robots
 
@@ -22,7 +22,13 @@ Dojo is an interactive 3D robot playground in the browser. Load a robot, drive i
 
 **Wheeled robots** — WASD for translation, Q/E for rotation, X for e-stop. Velocity limits adjustable via sliders.
 
-**Arm robots** — per-joint sliders for shoulder pan, shoulder lift, elbow flex, wrist flex, wrist roll, and gripper.
+**Arm robots** — per-joint sliders for shoulder pan, shoulder lift, elbow flex, wrist flex, wrist roll, and gripper. Arm and pan-tilt joints can also be posed directly by clicking and dragging their mesh in the 3D view.
+
+**Reset view** — click the reset button next to E-STOP, or press `H`, to return the camera and active robot to their starting pose. `H` is a keyboard-only shortcut and isn't shown anywhere in the UI.
+
+## Roadmap / Known Limitations
+
+- **Wheel joints aren't drag-posable yet.** Clicking and dragging a wheel to drive the robot via its wheeled kinematics (mecanum/omni) is planned but not implemented — wheel joints currently have no UI slider and are excluded from drag interaction.
 
 ## How It Works
 

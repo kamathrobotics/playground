@@ -187,10 +187,11 @@ function loadRobot(key) {
       }
     }
 
-    // Register (or clear) draggable joints for this robot. Passing null for
-    // non-arm types also cancels any leftover registration from a previous
-    // arm robot, so stale mesh references never get raycast against.
-    initJointDrag(config.robotType === 'arm' ? robot : null);
+    // Register draggable joints for this robot. jointDrag itself only
+    // registers joints that have a matching UI slider (arm/pan-tilt joints),
+    // so this works for any robot config without robotType gating. Wheel
+    // joints have no slider and aren't yet draggable — see README.
+    initJointDrag(robot);
   };
 
   mgr.onError = (url) => {
@@ -307,7 +308,10 @@ function animate() {
 
 // ── UI event wiring ────────────────────────────────────────────────────────────
 
-document.getElementById('resetButton').addEventListener('click', () => {
+// Resets the camera and the active robot back to their starting pose.
+// Triggered by clicking #resetButton or pressing H (see keydown listener
+// below) — H is intentionally not shown anywhere in the UI; see README.
+function resetView() {
   const resetBtn = document.getElementById('resetButton');
   resetBtn.classList.add('active');
 
@@ -338,6 +342,16 @@ document.getElementById('resetButton').addEventListener('click', () => {
 
   // Brief teal flash — remove active state once reset is complete
   setTimeout(() => resetBtn.classList.remove('active'), 400);
+}
+
+document.getElementById('resetButton').addEventListener('click', resetView);
+
+document.addEventListener('keydown', (e) => {
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+  if (e.key.toLowerCase() === 'h') {
+    e.preventDefault();
+    resetView();
+  }
 });
 
 document.getElementById('robotSelect').addEventListener('change', (e) => {
