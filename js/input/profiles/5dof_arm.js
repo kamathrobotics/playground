@@ -6,7 +6,8 @@
  *
  * Slider DOM IDs (defined in index.html):
  *   armSlider_shoulder_pan / shoulder_lift / elbow_flex / wrist_flex / wrist_roll / gripper
- *   armSlider_speed
+ *
+ * Motor speed is fixed at SPEED_MAX (no slider) — see processInput().
  */
 
 import { isEstopActive } from '../../input.js';
@@ -21,7 +22,7 @@ export const ARM_JOINTS = [
   { id: 'gripper',       name: 'gripper_joint',       min: -1.74533, max: 0.174533, default: 0.0 },
 ];
 
-const SPEED_DEFAULT = 1.0;
+const SPEED_MAX = 3.0;  // matches the (now-removed) speed slider's max — always run at full speed
 
 export const armProfile = {
 
@@ -43,9 +44,7 @@ export const armProfile = {
    * When E-stop is active, returns speed: 0 so joints freeze in place.
    */
   processInput(_rawInput) {
-    const speed = isEstopActive()
-      ? 0
-      : parseFloat(document.getElementById('armSlider_speed')?.value ?? SPEED_DEFAULT);
+    const speed = isEstopActive() ? 0 : SPEED_MAX;
 
     const jointTargets = {};
     for (const joint of ARM_JOINTS) {
@@ -64,9 +63,5 @@ export const armProfile = {
       if (slider) slider.value      = joint.default;
       if (badge)  badge.textContent = joint.default.toFixed(2);
     }
-    const speedSlider = document.getElementById('armSlider_speed');
-    const speedBadge  = document.getElementById('armSliderValue_speed');
-    if (speedSlider) speedSlider.value      = SPEED_DEFAULT;
-    if (speedBadge)  speedBadge.textContent = SPEED_DEFAULT.toFixed(2);
   },
 };

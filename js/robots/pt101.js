@@ -19,17 +19,6 @@ export const config = {
   // No geometry params needed — pantilt.js does direct joint control
   kinematics: {},
 
-  telemetry: {
-    icon: '⌖',
-    colWidths: ['9ch', '9ch'],
-    rows: [
-      [
-        { id: 'pan',  label: 'pan',  getValue: s => (s.joints?.pan_joint  ?? 0).toFixed(2) + ' rad' },
-        { id: 'tilt', label: 'tilt', getValue: s => (s.joints?.tilt_joint ?? 0).toFixed(2) + ' rad' },
-      ],
-    ],
-  },
-
   about: {
     description: 'Pan Tilt 101 or PT101 is a 2-DOF pan-tilt mechanism built from the first two joints of the SO101 arm, driven by serial bus servo motors. Designed as a compact camera or sensor mount with full ROS 2 support, it mounts an OAK-D S2 depth camera for visual-inertial odometry and SLAM tasks.',
     githubUrl:   'https://github.com/adityakamath/pantilt_ros2',

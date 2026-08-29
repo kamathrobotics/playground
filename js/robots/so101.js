@@ -17,23 +17,6 @@ export const config = {
   // No geometry params needed — 5dof_arm.js does direct joint control
   kinematics: {},
 
-  telemetry: {
-    icon: '⌖',
-    colWidths: ['9ch', '9ch', '9ch'],
-    rows: [
-      [
-        { id: 'pan',   label: 'pan',   getValue: s => ((s.joints?.shoulder_pan_joint  ?? 0)).toFixed(2) + ' rad' },
-        { id: 'lift',  label: 'lift',  getValue: s => ((s.joints?.shoulder_lift_joint ?? 0)).toFixed(2) + ' rad' },
-        { id: 'flex',  label: 'flex',  getValue: s => ((s.joints?.elbow_flex_joint    ?? 0)).toFixed(2) + ' rad' },
-      ],
-      [
-        { id: 'wrist', label: 'wrist', getValue: s => ((s.joints?.wrist_flex_joint    ?? 0)).toFixed(2) + ' rad' },
-        { id: 'roll',  label: 'roll',  getValue: s => ((s.joints?.wrist_roll_joint    ?? 0)).toFixed(2) + ' rad' },
-        { id: 'grip',  label: 'grip',  getValue: s => ((s.joints?.gripper_joint       ?? 0)).toFixed(2) + ' rad' },
-      ],
-    ],
-  },
-
   about: {
     description: 'The SO101 is an open-source 6-DoF robotic arm (5 DoF + gripper), driven by serial bus servo motors. Originally designed for the LeRobot platform, this build extends it with full ROS 2 support. It can be mounted on a LeKiwi mobile base for a complete mobile manipulator system.',
     githubUrl:   'https://github.com/adityakamath/so_arm_ros2',

@@ -6,7 +6,8 @@
  *
  * Slider DOM IDs (defined in index.html):
  *   ptSlider_pan / tilt
- *   ptSlider_speed
+ *
+ * Motor speed is fixed at SPEED_MAX (no slider) — see processInput().
  */
 
 import { isEstopActive } from '../../input.js';
@@ -17,7 +18,7 @@ const PT_JOINTS = [
   { id: 'tilt', name: 'tilt_joint', min: -Math.PI / 2,  max: Math.PI / 2,  default: 0.0 },
 ];
 
-const SPEED_DEFAULT = 1.0;
+const SPEED_MAX = 3.0;  // matches the (now-removed) speed slider's max — always run at full speed
 
 export const pantiltProfile = {
 
@@ -39,9 +40,7 @@ export const pantiltProfile = {
    * When E-stop is active, returns speed: 0 so joints freeze in place.
    */
   processInput(_rawInput) {
-    const speed = isEstopActive()
-      ? 0
-      : parseFloat(document.getElementById('ptSlider_speed')?.value ?? SPEED_DEFAULT);
+    const speed = isEstopActive() ? 0 : SPEED_MAX;
 
     const jointTargets = {};
     for (const joint of PT_JOINTS) {
@@ -60,9 +59,5 @@ export const pantiltProfile = {
       if (slider) slider.value      = joint.default;
       if (badge)  badge.textContent = joint.default.toFixed(2);
     }
-    const speedSlider = document.getElementById('ptSlider_speed');
-    const speedBadge  = document.getElementById('ptSliderValue_speed');
-    if (speedSlider) speedSlider.value      = SPEED_DEFAULT;
-    if (speedBadge)  speedBadge.textContent = SPEED_DEFAULT.toFixed(2);
   },
 };

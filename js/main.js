@@ -14,9 +14,6 @@ import {
   camera,
   renderer,
   orbitControls,
-  gridHelper,
-  axesHelper,
-  createAxesHelper,
 } from './scene.js';
 
 import {
@@ -69,12 +66,8 @@ function fadeRobotIn(target, duration) {
 
 // ── Runtime state ──────────────────────────────────────────────────────────────
 let robot       = null;   // active URDFRobot
-let robotAxes   = null;   // axes group attached to robot
 let originLine  = null;   // line from world origin → robot origin
 let robotPose   = { x: 0, y: 0, theta: 0 };
-let telemVel    = { vx: 0, vy: 0, omega: 0 };
-let currentJointAngles = {};  // updated by arm updateJoints each frame; used by arm telemetry
-const TELEM_SMOOTH = 0.2;
 let lastTime    = performance.now();
 let loadGen     = 0;      // bumped on every robot switch; stale callbacks check against it
 let activeRobot = null;   // reference to active entry from ROBOTS
@@ -91,9 +84,8 @@ function loadRobot(key) {
                      !!prevRobot.config.robotType &&
                      poseFamily(prevRobot.config.robotType) === poseFamily(entry.config.robotType);
 
-  // Snapshot pose/vel — persist if same type, zero otherwise
+  // Snapshot pose — persist if same type, zero otherwise
   const nextPose = sameType ? { ...robotPose } : { x: 0, y: 0, theta: 0 };
-  const nextVel  = sameType ? { ...telemVel  } : { vx: 0, vy: 0, omega: 0 };
 
   activeRobot     = entry;
   const { config } = entry;
@@ -109,14 +101,8 @@ function loadRobot(key) {
   // ── Tear down previous robot ────────────────────────────────────────────────
   if (robot)      { fadeRobotOut(robot, 200); robot = null; }
   if (originLine) { scene.remove(originLine); originLine = null; }
-  robotAxes = null;
 
   robotPose = nextPose;
-  telemVel  = nextVel;
-
-  // Render telemetry section for this robot's profile
-  if (config.telemetry) renderTelemetry(config.telemetry);
-  else hideTelemetry();
 
   // Reset input state and configure sliders for this robot's profile
   applyProfile(entry.inputProfile);
@@ -136,9 +122,6 @@ function loadRobot(key) {
   const showPantilt = !!config.pantilt;
   document.getElementById('pt101-toggle-row').style.display = 'none';
   document.getElementById('pantilt-controls').style.display = showPantilt ? '' : 'none';
-
-  // Clear joint angle state on every robot switch
-  currentJointAngles = {};
 
   if (!sameType) resetEstop();
 
@@ -230,13 +213,6 @@ function loadRobot(key) {
       robot = urdfRobot;
       robot.traverse(c => { if (c.isMesh) c.castShadow = c.receiveShadow = true; });
 
-      // Attach per-robot axes helper
-      // For elevated robots (zOffset > 0) we push axes down so they sit at Z = 0
-      robotAxes            = createAxesHelper(0.125);
-      robotAxes.position.z = -config.zOffset;
-      robotAxes.visible    = axesHelper.visible;
-      robot.add(robotAxes);
-
       // Origin trail line — only for mobile robots that translate in the world
       if (config.robotType === 'wheeled') {
         originLine = new THREE.Line(
@@ -246,7 +222,6 @@ function loadRobot(key) {
           ]),
           new THREE.LineBasicMaterial({ color: 0x00b8d9 })
         );
-        originLine.visible = axesHelper.visible;
         scene.add(originLine);
       }
 
@@ -271,45 +246,6 @@ function loadRobot(key) {
   );
 }
 
-// ── Telemetry rendering ────────────────────────────────────────────────────────
-let activeTelemFields = [];  // [{span, getValue}] — rebuilt on each robot load
-
-function renderTelemetry(telConfig) {
-  document.getElementById('telem-icon').textContent = telConfig.icon;
-
-  const container = document.getElementById('telemetry');
-  container.innerHTML = '';
-  activeTelemFields = [];
-
-  // Build grid template: label col (auto) + value col (fixed width) per field
-  const colTemplate = telConfig.colWidths.flatMap(w => ['auto', w]).join(' ');
-  container.style.gridTemplateColumns = colTemplate;
-  container.style.gridTemplateRows = `repeat(${telConfig.rows.length}, auto)`;
-
-  for (const row of telConfig.rows) {
-    for (const field of row) {
-      const label = document.createElement('span');
-      label.className = 'tl';
-      label.textContent = field.label + ':';
-
-      const value = document.createElement('span');
-      value.className = 'tv';
-      value.textContent = '—';
-
-      container.appendChild(label);
-      container.appendChild(value);
-      activeTelemFields.push({ span: value, getValue: field.getValue });
-    }
-  }
-}
-
-function hideTelemetry() {
-  document.getElementById('telem-icon').textContent = '';
-  const container = document.getElementById('telemetry');
-  container.innerHTML = '';
-  activeTelemFields = [];
-}
-
 // ── Animation loop ─────────────────────────────────────────────────────────────
 function animate() {
   requestAnimationFrame(animate);
@@ -324,13 +260,11 @@ function animate() {
 
     if (activeRobot.config.robotType === 'arm') {
       // Arm: lerp joints toward slider targets every frame (no pose integration)
-      const result = activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
-      if (result && Object.keys(result).length) currentJointAngles = result;
+      activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
 
     } else if (activeRobot.config.robotType === 'mobile-arm') {
       // Mobile arm: joint lerp (pan-tilt) + wheeled pose integration, always running
-      const result = activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
-      if (result && Object.keys(result).length) currentJointAngles = result;
+      activeRobot.updateJoints(robot, commands, dt, activeRobot.config.kinematics);
 
       if (velX !== 0 || velY !== 0 || velAngular !== 0) {
         const cosT = Math.cos(robotPose.theta);
@@ -363,16 +297,6 @@ function animate() {
         originLine.geometry.attributes.position.needsUpdate = true;
       }
     }
-
-    // ── Telemetry update (every frame while robot is loaded) ────────────────
-    telemVel.vx    += TELEM_SMOOTH * (velX       - telemVel.vx);
-    telemVel.vy    += TELEM_SMOOTH * (velY       - telemVel.vy);
-    telemVel.omega += TELEM_SMOOTH * (velAngular - telemVel.omega);
-
-    if (activeTelemFields.length) {
-      const state = { pose: robotPose, vel: telemVel, joints: currentJointAngles };
-      for (const field of activeTelemFields) field.span.textContent = field.getValue(state);
-    }
   } else {
     lastTime = performance.now();
   }
@@ -382,19 +306,6 @@ function animate() {
 }
 
 // ── UI event wiring ────────────────────────────────────────────────────────────
-
-document.getElementById('axesButton').addEventListener('click', (e) => {
-  e.target.classList.toggle('active');
-  const v = e.target.classList.contains('active');
-  axesHelper.visible = v;
-  if (robotAxes)  robotAxes.visible  = v;
-  if (originLine) originLine.visible = v;
-});
-
-document.getElementById('gridButton').addEventListener('click', (e) => {
-  e.target.classList.toggle('active');
-  gridHelper.visible = e.target.classList.contains('active');
-});
 
 document.getElementById('resetButton').addEventListener('click', () => {
   const resetBtn = document.getElementById('resetButton');
@@ -407,7 +318,6 @@ document.getElementById('resetButton').addEventListener('click', () => {
 
   // Return robot to world origin
   robotPose = { x: 0, y: 0, theta: 0 };
-  currentJointAngles = {};
   if (robot && activeRobot) {
     robot.position.set(0, 0, activeRobot.config.zOffset);
     robot.rotation.z = 0;
@@ -425,15 +335,6 @@ document.getElementById('resetButton').addEventListener('click', () => {
   if (activeRobot) applyProfile(activeRobot.inputProfile);
   // Reset arm joint sliders to defaults (no-op for wheeled)
   if (activeRobot?.inputProfile?.reset) activeRobot.inputProfile.reset();
-
-  // Restore axes + grid visibility
-  axesHelper.visible = true;
-  if (robotAxes)  robotAxes.visible  = true;
-  if (originLine) originLine.visible = true;
-  gridHelper.visible = true;
-
-  document.getElementById('axesButton').classList.add('active');
-  document.getElementById('gridButton').classList.add('active');
 
   // Brief teal flash — remove active state once reset is complete
   setTimeout(() => resetBtn.classList.remove('active'), 400);
@@ -464,8 +365,6 @@ document.querySelectorAll('.collapsible-header').forEach(header => {
 });
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────────
-document.getElementById('axesButton').classList.add('active');
-document.getElementById('gridButton').classList.add('active');
 
 // URL parameter: ?robot=<key> pre-selects a robot on load.
 // Default (no param or unrecognised key) → lekiwi.

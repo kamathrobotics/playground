@@ -481,51 +481,6 @@ input[type="range"]::-moz-range-thumb {
   to { transform: rotate(360deg); }
 }
 
-/* ── Footer telemetry ── */
-#telem-left {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-#telem-icon {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.28);
-  margin-right: 8px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-#footer-divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.10);
-  margin-left: 12px;
-  flex-shrink: 0;
-}
-
-#telemetry {
-  margin-left: 4px;
-  display: grid;
-  /* grid-template-columns and rows are set dynamically by renderTelemetry() */
-  column-gap: 4px;
-  row-gap: 2px;
-  font-family: 'Geist Mono', monospace;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  align-items: baseline;
-}
-
-.tl {
-  color: rgba(255, 255, 255, 0.32);
-  text-align: right;
-}
-
-.tv {
-  color: #6FA6C4;
-}
-
 /* ── Footer bar ── */
 #footer {
   position: fixed;
@@ -541,7 +496,7 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   padding: 0 12px;
   padding-right: 0;
-  justify-content: space-between;
+  justify-content: flex-end;
   z-index: 10;
 }
 

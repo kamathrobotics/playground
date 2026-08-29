@@ -21,23 +21,6 @@ export const config = {
     wheelRadius: 0.0385,     // metres (from URDF)
   },
 
-  telemetry: {
-    icon: '⌖',
-    colWidths: ['9ch', '9ch', '11ch'],
-    rows: [
-      [
-        { id: 'x',     label: 'x', getValue: s => s.pose.x.toFixed(2) + ' m' },
-        { id: 'y',     label: 'y', getValue: s => s.pose.y.toFixed(2) + ' m' },
-        { id: 'theta', label: 'θ', getValue: s => (((s.pose.theta % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI)).toFixed(2) + ' rad' },
-      ],
-      [
-        { id: 'u',     label: 'u', getValue: s => s.vel.vx.toFixed(2)    + ' m/s' },
-        { id: 'v',     label: 'v', getValue: s => s.vel.vy.toFixed(2)    + ' m/s' },
-        { id: 'omega', label: 'ω', getValue: s => s.vel.omega.toFixed(2) + ' rad/s' },
-      ],
-    ],
-  },
-
   about: {
     description: 'KR003 is an off-the-shelf mecanum-drive robot platform for robotics R&D. It features industrial DC motors with planetary gearboxes and encoder support, and four ultrasonic sensors for proximity detection. This open-source project covers the development of its URDF for future ROS 2 integration. KR003 was used for a proprietary VR-supported teleoperation and simulation MVP for an engineering company in the Netherlands.',
     githubUrl:   'https://github.com/adityakamath/kr0003_description',

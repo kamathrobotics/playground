@@ -109,7 +109,7 @@ const gridMaterial = new THREE.ShaderMaterial({
   `,
 });
 
-export const gridHelper = new THREE.Mesh(gridGeometry, gridMaterial);
+const gridHelper = new THREE.Mesh(gridGeometry, gridMaterial);
 gridHelper.position.z = 0;
 gridHelper.visible    = true;
 scene.add(gridHelper);
@@ -122,31 +122,6 @@ const shadowPlane = new THREE.Mesh(
 shadowPlane.position.z  = 0.001;
 shadowPlane.receiveShadow = true;
 scene.add(shadowPlane);
-
-// ── Axes helper factory ───────────────────────────────────────────────────────
-// ROS convention: X = red (forward), Y = green (left), Z = blue (up)
-export function createAxesHelper(size) {
-  const axes = new THREE.Group();
-
-  const makeLine = (dx, dy, dz, color) => {
-    const geo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(dx, dy, dz),
-    ]);
-    return new THREE.Line(geo, new THREE.LineBasicMaterial({ color }));
-  };
-
-  axes.add(makeLine(size, 0,    0,    0xff0000));  // X — red
-  axes.add(makeLine(0,    size, 0,    0x00ff00));  // Y — green
-  axes.add(makeLine(0,    0,    size, 0x0000ff));  // Z — blue
-
-  return axes;
-}
-
-// World-origin axes (always visible at the scene origin)
-export const axesHelper = createAxesHelper(0.125);
-axesHelper.visible = true;
-scene.add(axesHelper);
 
 // ── View offset — keeps robot centred in available area at any screen size ────
 function applyViewOffset() {

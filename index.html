@@ -156,15 +156,6 @@
                 oninput="document.getElementById('armSliderValue_gripper').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
-            <div class="slider-item">
-              <div class="slider-header">
-                <span class="slider-label">Motor Speed</span>
-                <span class="slider-value-badge"><span id="armSliderValue_speed">1.00</span> rad/s</span>
-              </div>
-              <input type="range" id="armSlider_speed" min="0.1" max="3.0" step="0.1" value="1.0"
-                oninput="document.getElementById('armSliderValue_speed').textContent=parseFloat(this.value).toFixed(2);this.blur()">
-            </div>
-
           </div>
         </div><!-- #arm-controls -->
 
@@ -195,15 +186,6 @@
                 oninput="document.getElementById('ptSliderValue_tilt').textContent=parseFloat(this.value).toFixed(2);this.blur()">
             </div>
 
-            <div class="slider-item">
-              <div class="slider-header">
-                <span class="slider-label">Motor Speed</span>
-                <span class="slider-value-badge"><span id="ptSliderValue_speed">1.00</span> rad/s</span>
-              </div>
-              <input type="range" id="ptSlider_speed" min="0.1" max="3.0" step="0.1" value="1.0"
-                oninput="document.getElementById('ptSliderValue_speed').textContent=parseFloat(this.value).toFixed(2);this.blur()">
-            </div>
-
           </div>
         </div><!-- #pantilt-controls -->
 
@@ -223,8 +205,6 @@
       </div>
       <div class="collapsible-content">
         <div class="view-buttons">
-          <button id="axesButton" class="toggle-button">Axes</button>
-          <button id="gridButton" class="toggle-button">Grid</button>
           <button id="resetButton">Reset</button>
         </div>
       </div>
@@ -235,11 +215,6 @@
   </div>
 
   <footer id="footer">
-    <div id="telem-left">
-      <span id="telem-icon"></span>
-      <div id="telemetry"></div>
-      <div id="footer-divider"></div>
-    </div>
     <a href="https://kamathrobotics.com/" target="_blank" id="footer-logo-link">
       <img src="assets/kamath_robotics_logo_dark.svg" alt="Kamath Robotics" id="logo">
     </a>
