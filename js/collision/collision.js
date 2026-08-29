@@ -6,11 +6,19 @@
  * path-sampled resolution with per-joint then per-group clamping) adapted to run in
  * real time against Three.js/urdf-loader data instead of ROS + python-fcl:
  *
- *   - Narrow phase here is an oriented-bounding-box (OBB) SAT test per link, built
- *     from the already-loaded visual meshes (this app skips separate collision
- *     geometry — see main.js's `parseCollision = false` — since for these URDFs
- *     collision meshes mirror the visuals). This trades exact mesh-vs-mesh
- *     precision for something cheap enough to run every frame in a browser.
+ *   - Narrow phase here tests each link's own mesh vertices (downsampled, already
+ *     loaded from the visual meshes — this app skips separate collision geometry,
+ *     see main.js's `parseCollision = false`, since for these URDFs collision
+ *     meshes mirror the visuals) directly against the OTHER link's oriented
+ *     bounding boxes, rather than approximating both links as boxes and testing
+ *     box-vs-box: two elongated, arbitrarily-oriented links can be geometrically
+ *     close and truly interpenetrating while their SAT-tested bounding boxes
+ *     still read as separated, because neither box's axes are fitted to where
+ *     the real contact surface is. Testing real points against a box only needs
+ *     ONE side's shape to be trustworthy, which is a much easier bar to clear.
+ *   - Each link's box is further split into several slices along its longest
+ *     local axis (see computeLocalBounds) so a real, localized fold isn't
+ *     missed by one box spanning the link's whole, mostly-empty extent.
  *   - Forward kinematics is computed independently of the live scene graph (rather
  *     than mutating robot.joints and reading back matrixWorld), so a hypothetical
  *     joint configuration can be probed without visibly moving the rendered robot.
@@ -25,62 +33,21 @@ function pairKey(a, b) {
 }
 
 /**
- * OBB-vs-OBB separating-axis test (Ericson, Real-Time Collision Detection) — but
- * instead of a plain boolean, returns the minimum per-axis overlap. A negative
- * value means a separating axis was found (boxes apart by |value| along that
- * axis, i.e. not colliding); a positive value approximates penetration depth.
- * Comparing this against a per-pair rest-pose baseline (see SelfCollisionChecker)
- * is what keeps a link's own motor housing — always slightly "overlapping" its
- * neighbor in this loose box proxy — from reading as a permanent false collision.
+ * How far inside `box` (world-space { center, axes, halfSize }) `point` is,
+ * measured as the smallest margin to any of the box's 3 faces. Returns
+ * -Infinity if the point is outside the box on any axis (not penetrating).
  */
-function obbOverlapDepth(a, b) {
-  const R = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  const AbsR = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  const EPS = 1e-6;
-  for (let i = 0; i < 3; i++)
-    for (let j = 0; j < 3; j++) {
-      R[i][j] = a.axes[i].dot(b.axes[j]);
-      AbsR[i][j] = Math.abs(R[i][j]) + EPS;
-    }
-
-  const t = b.center.clone().sub(a.center);
-  const tA = [t.dot(a.axes[0]), t.dot(a.axes[1]), t.dot(a.axes[2])];
-  const ea = [a.halfSize.x, a.halfSize.y, a.halfSize.z];
-  const eb = [b.halfSize.x, b.halfSize.y, b.halfSize.z];
-
-  let minOverlap = Infinity;
-
-  // Axes L = A0, A1, A2
+function pointBoxDepth(point, box) {
+  const rel = point.clone().sub(box.center);
+  let depth = Infinity;
   for (let i = 0; i < 3; i++) {
-    const ra = ea[i];
-    const rb = eb[0] * AbsR[i][0] + eb[1] * AbsR[i][1] + eb[2] * AbsR[i][2];
-    const overlap = ra + rb - Math.abs(tA[i]);
-    if (overlap < 0) return overlap;
-    if (overlap < minOverlap) minOverlap = overlap;
+    const local = rel.dot(box.axes[i]);
+    const halfSize = box.halfSize.getComponent(i);
+    const margin = halfSize - Math.abs(local);
+    if (margin <= 0) return -Infinity;
+    if (margin < depth) depth = margin;
   }
-  // Axes L = B0, B1, B2
-  for (let j = 0; j < 3; j++) {
-    const ra = ea[0] * AbsR[0][j] + ea[1] * AbsR[1][j] + ea[2] * AbsR[2][j];
-    const rb = eb[j];
-    const tBj = tA[0] * R[0][j] + tA[1] * R[1][j] + tA[2] * R[2][j];
-    const overlap = ra + rb - Math.abs(tBj);
-    if (overlap < 0) return overlap;
-    if (overlap < minOverlap) minOverlap = overlap;
-  }
-  // 9 cross-product axes L = Ai x Bj
-  for (let i = 0; i < 3; i++) {
-    const i1 = (i + 1) % 3, i2 = (i + 2) % 3;
-    for (let j = 0; j < 3; j++) {
-      const j1 = (j + 1) % 3, j2 = (j + 2) % 3;
-      const ra = ea[i1] * AbsR[i2][j] + ea[i2] * AbsR[i1][j];
-      const rb = eb[j1] * AbsR[i][j2] + eb[j2] * AbsR[i][j1];
-      const tCross = tA[i2] * R[i1][j] - tA[i1] * R[i2][j];
-      const overlap = ra + rb - Math.abs(tCross);
-      if (overlap < 0) return overlap;
-      if (overlap < minOverlap) minOverlap = overlap;
-    }
-  }
-  return minOverlap; // no separating axis found — approximate penetration depth
+  return depth;
 }
 
 function findParentLink(node) {
@@ -102,29 +69,81 @@ function walkOwnMeshes(node, root, callback) {
   for (const child of node.children) walkOwnMeshes(child, root, callback);
 }
 
-/** Local-frame axis-aligned bounds of a link, from its own (non-descendant) visual meshes. */
+const BOUNDS_SLICES = 4;
+
+/**
+ * Local-frame bounds of a link, from its own (non-descendant) visual meshes,
+ * split into BOUNDS_SLICES boxes along the link's longest local axis (plus one
+ * overall bounding sphere for the cheap broad-phase reject).
+ *
+ * A single box spanning a whole elongated link (e.g. an upper/lower arm
+ * segment) is only as tight as its emptiest region — two such links folding
+ * into each other at one end can show almost no change in overlap depth as
+ * the joint between them rotates, because the box's bulk lies away from
+ * where the real collision happens. Slicing along the long axis keeps each
+ * sub-box tight to just its own section of the link, so a localized fold is
+ * caught by whichever slice-pair actually overlaps.
+ */
 function computeLocalBounds(link) {
-  const box = new THREE.Box3();
   const invLink = link.matrixWorld.clone().invert();
-  const v = new THREE.Vector3();
-  let found = false;
+  const points = [];
   walkOwnMeshes(link, link, (c) => {
     if (!c.geometry) return;
-    found = true;
     const rel = invLink.clone().multiply(c.matrixWorld);
     const pos = c.geometry.attributes.position;
+    const v = new THREE.Vector3();
     for (let i = 0; i < pos.count; i++) {
-      v.fromBufferAttribute(pos, i).applyMatrix4(rel);
-      box.expandByPoint(v);
+      points.push(v.fromBufferAttribute(pos, i).applyMatrix4(rel).clone());
     }
   });
-  if (!found) return null;
-  const center = new THREE.Vector3();
-  const size = new THREE.Vector3();
-  box.getCenter(center);
-  box.getSize(size);
-  const halfSize = size.multiplyScalar(0.5);
-  return { center, halfSize, radius: halfSize.length() };
+  if (!points.length) return null;
+
+  const overallBox = new THREE.Box3();
+  for (const p of points) overallBox.expandByPoint(p);
+  const overallCenter = new THREE.Vector3();
+  const overallSize = new THREE.Vector3();
+  overallBox.getCenter(overallCenter);
+  overallBox.getSize(overallSize);
+  const overallRadius = points.reduce((r, p) => Math.max(r, p.distanceTo(overallCenter)), 0);
+
+  const axisKey = overallSize.x >= overallSize.y && overallSize.x >= overallSize.z ? 'x'
+                : overallSize.y >= overallSize.z ? 'y' : 'z';
+  const lo = overallBox.min[axisKey];
+  const hi = overallBox.max[axisKey];
+  const span = hi - lo;
+
+  const slices = [];
+  if (span < 1e-6) {
+    // Degenerate (flat) extent along the long axis — one box is already tight.
+    const halfSize = overallSize.clone().multiplyScalar(0.5);
+    slices.push({ center: overallCenter.clone(), halfSize, radius: halfSize.length() });
+  } else {
+    for (let s = 0; s < BOUNDS_SLICES; s++) {
+      const sliceLo = lo + (s / BOUNDS_SLICES) * span;
+      const sliceHi = lo + ((s + 1) / BOUNDS_SLICES) * span;
+      const slicePoints = points.filter((p) => p[axisKey] >= sliceLo - 1e-9 && p[axisKey] <= sliceHi + 1e-9);
+      if (!slicePoints.length) continue;
+      const box = new THREE.Box3();
+      for (const p of slicePoints) box.expandByPoint(p);
+      const center = new THREE.Vector3();
+      const size = new THREE.Vector3();
+      box.getCenter(center);
+      box.getSize(size);
+      const halfSize = size.multiplyScalar(0.5);
+      slices.push({ center, halfSize, radius: halfSize.length() });
+    }
+  }
+
+  // Downsample the vertex cloud for the point-vs-box narrow phase (see
+  // pointBoxDepth) — a real collision only needs SOME of a link's actual
+  // points to land inside the other link's box, so a bounded, evenly-strided
+  // subset is enough to catch it without testing every raw mesh vertex.
+  const MAX_TEST_POINTS = 200;
+  const stride = Math.max(1, Math.floor(points.length / MAX_TEST_POINTS));
+  const testPoints = [];
+  for (let i = 0; i < points.length; i += stride) testPoints.push(points[i]);
+
+  return { slices, overallCenter, overallRadius, points: testPoints };
 }
 
 export class SelfCollisionChecker {
@@ -293,7 +312,11 @@ export class SelfCollisionChecker {
     return transforms;
   }
 
-  /** pairKey -> approximate OBB penetration depth (see obbOverlapDepth) for the given pose. */
+  /**
+   * pairKey -> approximate penetration depth for the given pose — the deepest
+   * result of testing each link's real mesh points against the OTHER link's
+   * slice boxes, checked in both directions (see pointBoxDepth / computeLocalBounds).
+   */
   _rawDepths(jointValues, pairs) {
     const transforms = this._forwardKinematics(jointValues);
     const links = new Set(pairs.flat());
@@ -302,11 +325,18 @@ export class SelfCollisionChecker {
       const M = transforms.get(link);
       const bounds = this._linkBounds.get(link);
       if (!M || !bounds) continue;
-      const center = bounds.center.clone().applyMatrix4(M);
+      const overallCenter = bounds.overallCenter.clone().applyMatrix4(M);
       const axes = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
       M.extractBasis(axes[0], axes[1], axes[2]);
       axes.forEach((a) => a.normalize());
-      worldBounds.set(link, { center, axes, halfSize: bounds.halfSize, radius: bounds.radius });
+      const slices = bounds.slices.map((s) => ({
+        center: s.center.clone().applyMatrix4(M),
+        axes,
+        halfSize: s.halfSize,
+        radius: s.radius,
+      }));
+      const points = bounds.points.map((p) => p.clone().applyMatrix4(M));
+      worldBounds.set(link, { overallCenter, overallRadius: bounds.overallRadius, slices, points });
     }
 
     const depths = new Map();
@@ -314,12 +344,30 @@ export class SelfCollisionChecker {
       const A = worldBounds.get(a), B = worldBounds.get(b);
       if (!A || !B) continue;
       const key = pairKey(a, b);
-      // Cheap bounding-sphere reject before the OBB SAT test.
-      if (A.center.distanceTo(B.center) > A.radius + B.radius + this._collisionMargin) {
+      // Cheap bounding-sphere reject (whole-link) before the per-point tests.
+      if (A.overallCenter.distanceTo(B.overallCenter) > A.overallRadius + B.overallRadius + this._collisionMargin) {
         depths.set(key, -Infinity);
         continue;
       }
-      depths.set(key, obbOverlapDepth(A, B));
+      let maxDepth = -Infinity;
+      // B's real points against A's boxes, then A's real points against B's
+      // boxes — a shallow one-sided interpenetration can register from only
+      // one direction depending on which link's shape the boxes fit better.
+      for (const box of A.slices) {
+        for (const p of B.points) {
+          if (p.distanceTo(box.center) > box.radius + this._collisionMargin) continue;
+          const d = pointBoxDepth(p, box);
+          if (d > maxDepth) maxDepth = d;
+        }
+      }
+      for (const box of B.slices) {
+        for (const p of A.points) {
+          if (p.distanceTo(box.center) > box.radius + this._collisionMargin) continue;
+          const d = pointBoxDepth(p, box);
+          if (d > maxDepth) maxDepth = d;
+        }
+      }
+      depths.set(key, maxDepth);
     }
     return depths;
   }
