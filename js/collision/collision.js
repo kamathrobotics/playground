@@ -214,8 +214,15 @@ export class SelfCollisionChecker {
     );
 
     // Determine which pairs are worth checking at runtime: non-adjacent pairs that
-    // aren't always touching, plus adjacent pairs whose joint's full sweep collides.
-    const SWEEP_SAMPLES = 20;
+    // aren't always touching, plus adjacent pairs whose joint's full sweep ever collides.
+    // Matches so_arm_ros2's self_collision_checker.py: an adjacent pair is checked if
+    // ANY sample across its joint's range collides — no upper-bound exclusion for pairs
+    // that collide across most of the sweep. (An earlier version of this port added such
+    // an exclusion, reasoning a mostly-colliding pair must be an intentional mechanism
+    // like a gripper's jaw — but the coarse OBB proxy here can read as "mostly colliding"
+    // for a real, narrow hazard too, e.g. elbow_flex's upper/lower arm links, silently
+    // dropping it from checkedPairs and leaving that joint's real self-collision unchecked.)
+    const SWEEP_SAMPLES = 40;
     this.checkedPairs = [];
     for (const [a, b] of candidatePairs) {
       const key = pairKey(a, b);
@@ -228,19 +235,12 @@ export class SelfCollisionChecker {
       if (j.type === 'fixed') continue; // rigid assembly — never a runtime self-collision
       if (!j.limit) { this.checkedPairs.push([a, b]); continue; }
       const { lower, upper } = j.limit;
-      let collidingSamples = 0;
-      const totalSamples = SWEEP_SAMPLES + 1;
-      for (let s = 0; s <= SWEEP_SAMPLES; s++) {
-        const angle = lower + (s / SWEEP_SAMPLES) * (upper - lower);
-        if (this._collide({ [jname]: angle }, [[a, b]]).length) collidingSamples++;
+      let anyColliding = false;
+      for (let s = 0; s < SWEEP_SAMPLES; s++) {
+        const angle = lower + (s / (SWEEP_SAMPLES - 1)) * (upper - lower);
+        if (this._collide({ [jname]: angle }, [[a, b]]).length) { anyColliding = true; break; }
       }
-      // A pair colliding across virtually its whole range isn't a self-collision risk —
-      // it's a mechanism designed to approach itself through normal operation (e.g. a
-      // gripper's jaw against its own base). Only track pairs that are SOMETIMES clear,
-      // so a real fold-into-itself hazard is caught without freezing that mechanism.
-      if (collidingSamples > 0 && collidingSamples < totalSamples * 0.9) {
-        this.checkedPairs.push([a, b]);
-      }
+      if (anyColliding) this.checkedPairs.push([a, b]);
     }
 
     // Joint path from root to each link, for joints_between().
