@@ -9,7 +9,7 @@ import { wheeledProfile } from '../input/profiles/wheeled.js';
 
 export const config = {
   robotType: 'wheeled',
-  title:    'KR003 Dojo',
+  title:    'KR003 Sandbox',
   repoBase: 'https://raw.githubusercontent.com/adityakamath/kr0003_description/main/urdf/',
   urdfPath: 'robot.urdf',
   zOffset:  0.0,  // robot base sits flush on the ground plane

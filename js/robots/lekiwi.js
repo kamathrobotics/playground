@@ -9,7 +9,7 @@ import { lekiwiProfile }  from '../input/profiles/lekiwi.js';
 
 export const config = {
   robotType:  'mobile-arm',
-  title:      'LeKiwi Dojo',
+  title:      'LeKiwi Sandbox',
   repoBase:   'https://raw.githubusercontent.com/adityakamath/lekiwi_ros2/main/lekiwi_description/urdf/base_pantilt/',
   urdfPath:   'base_pantilt.urdf',
   zOffset:    0.0,

@@ -9,7 +9,7 @@ import { armProfile }   from '../input/profiles/5dof_arm.js';
 
 export const config = {
   robotType: 'arm',
-  title:     'SO101 Dojo',
+  title:     'SO101 Sandbox',
   repoBase:  'https://raw.githubusercontent.com/adityakamath/so_arm_ros2/main/so_arm_description/urdf/so101/',
   urdfPath:  'so101.urdf',
   zOffset:     0.0,
