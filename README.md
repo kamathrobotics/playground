@@ -84,13 +84,6 @@ wrangler.jsonc           ← Cloudflare Pages deployment config
 
 See `js/robots/registry.js` for the full specification.
 
-## CI
-
-Every push and pull request runs:
-- **HTML lint** — `htmlhint` against `index.html`
-- **JS syntax check** — `node --check` on every file in `js/`
-- **Link check** — [lychee](https://github.com/lycheeverse/lychee-action) verifies links in `README.md` and `index.html` aren't broken
-
 ## License
 
 Apache-2.0 — see [LICENSE](LICENSE).
