@@ -221,12 +221,14 @@ function radialDirection(point, originWorld, axisWorld) {
 }
 
 function applyToSlider(jointName, angle) {
-  const slider = document.querySelector(`[data-joint-name="${jointName}"]`);
-  if (!slider) return;
-  slider.value = angle;
-  // Naming convention (index.html): "<prefix>Slider_<id>" -> "<prefix>SliderValue_<id>".
-  const badge = document.getElementById(slider.id.replace('Slider_', 'SliderValue_'));
-  if (badge) badge.textContent = angle.toFixed(2);
+  const sliders = document.querySelectorAll(`[data-joint-name="${jointName}"]`);
+  if (!sliders.length) return;
+  for (const slider of sliders) {
+    slider.value = angle;
+    // Naming convention (index.html): "<prefix>Slider_<id>" -> "<prefix>SliderValue_<id>".
+    const badge = document.getElementById(slider.id.replace('Slider_', 'SliderValue_'));
+    if (badge) badge.textContent = angle.toFixed(2);
+  }
 }
 
 function onPointerMove(event) {
