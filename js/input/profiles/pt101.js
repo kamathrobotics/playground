@@ -14,8 +14,9 @@ import { isEstopActive } from '../../input.js';
 
 // Joint configuration: DOM id suffix, URDF joint name, URDF limits, default
 const PT_JOINTS = [
-  { id: 'pan',  name: 'pan_joint',  min: -2.0,          max: 2.0,          default: 0.0 },
-  { id: 'tilt', name: 'tilt_joint', min: -Math.PI / 2,  max: Math.PI / 2,  default: 0.0 },
+  // PT101 and LeKiwi pan-tilt URDFs expose pan as shoulder_pan_joint.
+  { id: 'pan',  name: 'shoulder_pan_joint', min: -2.0,          max: 2.0,          default: 0.0 },
+  { id: 'tilt', name: 'tilt_joint',         min: -Math.PI / 2,  max: Math.PI / 2,  default: 0.0 },
 ];
 
 const SPEED_MAX = 3.0;  // matches the (now-removed) speed slider's max — always run at full speed
@@ -47,6 +48,9 @@ export const pantiltProfile = {
       const el = document.getElementById('ptSlider_' + joint.id);
       jointTargets[joint.name] = el ? parseFloat(el.value) : joint.default;
     }
+
+    // Backward-compatibility alias for older pan_joint naming.
+    jointTargets.pan_joint = jointTargets.shoulder_pan_joint;
 
     return { velX: 0, velY: 0, velAngular: 0, jointTargets, speed };
   },

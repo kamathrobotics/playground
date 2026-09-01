@@ -438,18 +438,8 @@ function resetView() {
   // Reset arm joint sliders to defaults (no-op for wheeled)
   if (activeRobot?.inputProfile?.reset) activeRobot.inputProfile.reset();
 
-  // For robots with pan-tilt or arm joints, explicitly reset joint angles
-  // to their home positions (slider defaults) immediately, don't wait for lerp
-  if (robot && activeRobot && (robotType === 'arm' || robotType === 'mobile-arm')) {
-    // Get the default joint targets from the profile after reset
-    const homeCommands = getCommands(activeRobot.inputProfile);
-    if (homeCommands.jointTargets && robot.joints) {
-      for (const [jointName, targetAngle] of Object.entries(homeCommands.jointTargets)) {
-        const joint = robot.joints[jointName];
-        if (joint) joint.setJointValue(targetAngle);
-      }
-    }
-  }
+  // Joint-driven robots (arm/mobile-arm) return to home smoothly via their
+  // normal per-frame kinematics interpolation after slider reset.
 
   // Brief teal flash — remove active state once reset is complete
   setTimeout(() => resetBtn.classList.remove('active'), 400);

@@ -7,8 +7,13 @@
  * Used by: PT101
  */
 
-const JOINT_NAMES = [
+const PAN_JOINT_CANDIDATES = [
+  'shoulder_pan_joint',
   'pan_joint',
+];
+
+const JOINT_NAMES = [
+  ...PAN_JOINT_CANDIDATES,
   'tilt_joint',
 ];
 
@@ -26,6 +31,10 @@ export function updateJoints(robot, commands, dt, _params) {
 
   const { jointTargets, speed } = commands;
   const maxDelta = (speed ?? 0) * dt;
+  const panJointName = PAN_JOINT_CANDIDATES.find((name) => robot.joints[name]);
+  const panTarget = panJointName
+    ? (jointTargets?.[panJointName] ?? jointTargets?.pan_joint ?? jointTargets?.shoulder_pan_joint)
+    : undefined;
 
   const current  = {};
   const proposed = {};
@@ -34,7 +43,9 @@ export function updateJoints(robot, commands, dt, _params) {
     if (!joint) continue;
 
     const cur    = joint.angle ?? 0;
-    const target = jointTargets?.[name] ?? cur;
+    const target = (panJointName && name === panJointName)
+      ? (panTarget ?? cur)
+      : (jointTargets?.[name] ?? cur);
     const delta  = target - cur;
 
     current[name]  = cur;
