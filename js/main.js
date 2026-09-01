@@ -413,8 +413,8 @@ function resetView() {
   // Return robot to world origin — smoothly drive back if it has a base
   // pose (wheeled / mobile-arm); pure arm robots (so101, pt101) have no
   // x/y/theta to animate, so snap those instantly as before.
+  const robotType = activeRobot?.config.robotType;
   if (robot && activeRobot) {
-    const robotType = activeRobot.config.robotType;
     if (robotType === 'wheeled' || robotType === 'mobile-arm') {
       robotResetAnim = {
         start:      performance.now(),
@@ -437,6 +437,19 @@ function resetView() {
   if (activeRobot) applyProfile(activeRobot.inputProfile);
   // Reset arm joint sliders to defaults (no-op for wheeled)
   if (activeRobot?.inputProfile?.reset) activeRobot.inputProfile.reset();
+
+  // For robots with pan-tilt or arm joints, explicitly reset joint angles
+  // to their home positions (slider defaults) immediately, don't wait for lerp
+  if (robot && activeRobot && (robotType === 'arm' || robotType === 'mobile-arm')) {
+    // Get the default joint targets from the profile after reset
+    const homeCommands = getCommands(activeRobot.inputProfile);
+    if (homeCommands.jointTargets && robot.joints) {
+      for (const [jointName, targetAngle] of Object.entries(homeCommands.jointTargets)) {
+        const joint = robot.joints[jointName];
+        if (joint) joint.setJointValue(targetAngle);
+      }
+    }
+  }
 
   // Brief teal flash — remove active state once reset is complete
   setTimeout(() => resetBtn.classList.remove('active'), 400);
